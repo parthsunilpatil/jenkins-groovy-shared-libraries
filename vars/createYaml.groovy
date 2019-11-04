@@ -1,7 +1,8 @@
 #!/usr/bin/env groovy
 
+import groovy.yaml.YamlBuilder
+
 def call() {
-	def yaml = new groovy.yaml.YamlBuilder()
 	def yamlMap = [
 		apiVersion: 'v1',
 		kind: 'Pod',
@@ -35,6 +36,6 @@ def call() {
 		]
 	]
 
-	echo yaml(yamlMap).toString()
+	echo YamlBuilder(yamlMap).toString()
 
 }
