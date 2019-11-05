@@ -9,7 +9,7 @@ class GlobalVars {
     spec:
       containers:
       - name: docker
-        image: docker
+        image: docker:latest
         command:
         - cat
         tty: true
@@ -25,7 +25,7 @@ class GlobalVars {
         - name: mvnm2
           mountPath: /root/.m2/repository
       - name: git
-        image: alpine/git
+        image: alpine/git:latest
         command:
         - cat
         tty: true
