@@ -42,14 +42,6 @@ class GlobalVars {
     kind: Pod
     spec:
       containers:
-      - name: docker
-        image: docker
-        command:
-        - cat
-        tty: true
-        volumeMounts:
-        - name: dockersock
-          mountPath: /var/run/docker.sock
       - name: helm
         image: parthpatil3110/k8s-helm:latest
         command:
@@ -58,6 +50,8 @@ class GlobalVars {
         volumeMounts:
         - name: kubeconfig
           mountPath: /root/.kube/config
+        - name: dockersock
+          mountPath: /var/run/docker.sock
       volumes:
       - name: dockersock
         hostPath:
