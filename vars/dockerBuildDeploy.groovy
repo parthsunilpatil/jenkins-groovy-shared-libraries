@@ -4,7 +4,7 @@ def call(Map config) {
 	container(config.containerName) {
 		print "Docker Build & Delete : config = ${config}"
 		if(config.buildOnly) {
-			sh "docker build -t ${config.registry}/${config.repository}:${config.tag}"
+			sh "docker build -t ${config.registry}/${config.repository}:${config.tag} ."
 		} else {
 			withCredentials([[$class:
 				'UsernamePasswordMultiBinding',
