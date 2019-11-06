@@ -31,6 +31,8 @@ def call(Map config) {
 							curl += " --data \'${it}\'"
 						}
 					}
+					print "curl command = " + curl
+					sh curl
 				}
 			}
 		}
