@@ -2,7 +2,7 @@
 
 def call(Map config) {
 	container(config.containerName) {
-		print "Docker Build & Delete : config = ${config}"
+		print "Docker Build, Deploy & Cleanup : config = ${config}"
 		if(config.buildOnly) {
 			sh "docker build -t ${config.registry}/${config.repository}:${config.tag} ."
 		} else {
@@ -19,6 +19,10 @@ def call(Map config) {
 		}
 
 		print "Cleaning up dangling images"
-		sh "docker rmi --force \$(docker images -f \"dangling=true\" -q)"
+		sh """
+			if ! docker rmi --force \$(docker images -f \"dangling=true\" -q); then
+				echo "Clean Up of dangling not in use docker images completed"
+			fi
+		"""
 	}
 }
