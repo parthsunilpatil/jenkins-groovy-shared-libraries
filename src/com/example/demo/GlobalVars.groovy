@@ -53,7 +53,7 @@ class GlobalVars {
         - name: dockersock
           mountPath: /var/run/docker.sock
       - name: kubectl
-        image: parthpatil3110/k8s-kubectl-psql
+        image: parthpatil3110/k8s-kubectl-psql:custom
         command:
         - cat
         tty: true
