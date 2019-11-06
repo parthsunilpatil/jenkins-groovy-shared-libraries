@@ -17,7 +17,7 @@ def call(Map config) {
 					print "Getting src from ${it.gitRepository} which contains sqlFile"
 					sh "git clone -b ${it.gitBranch} ${it.gitRepository} ."
 					sh "pwd; ls -ltr"
-					sh "psql -h ${it.host} -p ${it.port} -U admin -d info_db ${it.sqlFile}"
+					sh "psql -h ${it.host} -p ${it.port} -U admin -d info_db -f ${it.sqlFile}"
 				} else {
 					sh "curl ${it.url}"
 				}
