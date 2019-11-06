@@ -9,7 +9,7 @@ def call(Map config) {
 				def podSh = "kubectl -n ${config.namespace} get pod"
 				if(it.containsKey('labels')) {
 					it.labels.each {
-						podSh += " -l ${it}"
+						podSh += " -l \'${it}\'"
 					}
 				}
 				podSh += " -o \'jsonpath={.items[0].metadata.name}\'"
