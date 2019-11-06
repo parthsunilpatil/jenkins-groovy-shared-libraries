@@ -17,5 +17,8 @@ def call(Map config) {
 				"""
 			}
 		}
+
+		print "Cleaning up dangling images"
+		sh "docker rmi --force \$(docker images -f \"dangling=true\" -q)"
 	}
 }
