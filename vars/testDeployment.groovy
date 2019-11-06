@@ -18,8 +18,19 @@ def call(Map config) {
 					sh "git clone -b ${it.gitBranch} ${it.gitRepository} ."
 					sh "pwd; ls -ltr"
 					sh "psql -h ${it.host} -p ${it.port} -U admin -d info_db -f ${it.sqlFile}"
-				} else {
-					sh "curl ${it.url}"
+				} else if(it.curl) {
+					def curl = "curl -i"
+					if(it.containsKey('method')) {
+						curl += " -X ${it.method}"
+					}
+					if(it.containsKey('url')) {
+						curl += " --url ${it.url}"
+					}
+					if(it.containsKey('data')) {
+						it.data.each {
+							curl += " --data \'${it}\'"
+						}
+					}
 				}
 			}
 		}
