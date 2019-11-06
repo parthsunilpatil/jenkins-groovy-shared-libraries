@@ -52,6 +52,16 @@ class GlobalVars {
           mountPath: /root/.kube/config
         - name: dockersock
           mountPath: /var/run/docker.sock
+      - name: kubectl
+        image: parthpatil3110/k8s-kubectl-psql
+        command:
+        - cat
+        tty: true
+        volumeMounts:
+        - name: kubeconfig
+          mountPath: /root/.kube/config
+        - name: dockersock
+          mountPath: /var/run/docker.sock
       volumes:
       - name: dockersock
         hostPath:
