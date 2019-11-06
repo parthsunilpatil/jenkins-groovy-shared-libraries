@@ -6,7 +6,16 @@ def call(Map config) {
 
 		if(config.containsKey('waitFor')) {
 			config.waitFor.each {
-				sh "kubectl -n ${config.namespace} wait --for=condition=Ready pod/\$(kubectl -n ${config.namespace} get pod -l app.kubernetes.io/instance=${it.instance} -l app.kubernetes.io/name=${it.name} -o 'jsonpath={.items[0].metadata.name}')"
+				def podSh = "kubectl -n ${config.namespace} get pod"
+				if(it.containsKey('labels')) {
+					it.labels.each {
+						podSh += " -l ${it}"
+					}
+				}
+				podSh += " -o \'jsonpath={.items[0].metadata.name}\'"
+				print "Shell to get pod name = ${podSh}"
+				def pod = sh returnStdout: true, script: podSh
+				sh "kubectl -n ${config.namespace} wait --for=condition=Ready pod/${pod}"
 			}
 		}
 
