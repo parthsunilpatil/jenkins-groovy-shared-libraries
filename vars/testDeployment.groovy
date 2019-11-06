@@ -11,9 +11,10 @@ def call(Map config) {
 		}
 
 		if(config.containsKey('test')) {
+			sh "pwd; ls -ltr"
 			config.test.each {
 				if(it.psql) {
-					sh "psql -h ${it.host} -p ${it.port} -U admin -d info_db -c '${it.sql}'"
+					sh "psql -h ${it.host} -p ${it.port} -U admin -d info_db ${it.sqlFile}"
 				} else {
 					sh "curl ${it.url}"
 				}
