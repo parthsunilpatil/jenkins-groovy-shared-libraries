@@ -15,7 +15,7 @@ def call(Map config) {
 				podSh += " -o \'jsonpath={.items[0].metadata.name}\'"
 				print "Shell to get pod name = ${podSh}"
 				def pod = sh returnStdout: true, script: podSh
-				sh "kubectl -n ${config.namespace} wait --for=condition=Ready pod/${pod}"
+				sh "kubectl -n ${config.namespace} wait --timeout=3600s --for=condition=Ready pod/${pod}"
 			}
 		}
 
