@@ -19,7 +19,7 @@ def call(Map config) {
 			}
 		}
 
-		if(config.containsKey('test')) {
+		if(config.containsKey('curl')) {
 			sh "pwd; ls -ltr"
 			config.curl.each {
 				def curl = "curl -i"
