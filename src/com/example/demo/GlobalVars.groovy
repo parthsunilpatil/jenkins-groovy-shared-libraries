@@ -2,7 +2,6 @@
 package com.example.demo
 
 class GlobalVars {
-    static final String GLOBALVARS_DEFAULT_NAME = "||GlobalVars||DEFAULT_NAME||"
     static final String PODTEMPLATE_BUILD_YAML = """
     apiVersion: v1
     kind: Pod
@@ -35,7 +34,7 @@ class GlobalVars {
           path: /var/run/docker.sock
       - name: mvnm2
         hostPath:
-          path: /c/Users/parthp/m2
+          path: /c/Users/parthp/volumes/m2
     """
     static final String PODTEMPLATE_DEPLOY_YAML = """
     apiVersion: v1
