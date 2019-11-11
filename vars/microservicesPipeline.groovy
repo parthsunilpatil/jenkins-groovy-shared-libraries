@@ -11,7 +11,7 @@ def call(Map config) {
 
 				agent {
 					kubernetes {
-						yaml GlobalVars.PODTEMPLATE_BUILD_YAML
+						yaml GlobalVars.getYaml
 					}
 				}
 
@@ -39,7 +39,7 @@ def call(Map config) {
 
 				agent {
 					kubernetes {
-						yaml GlobalVars.PODTEMPLATE_DEPLOY_YAML
+						yaml GlobalVars.getYaml 'DEPLOY'
 					}
 				}
 

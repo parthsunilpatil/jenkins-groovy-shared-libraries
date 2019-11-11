@@ -70,7 +70,7 @@ class GlobalVars {
           path: /c/Users/parthp/.kube/config
     """
 
-    static def yaml(String mode = 'BUILD') {
+    static def getYaml(String mode = 'BUILD') {
         if(mode == 'DEPLOY') {
             return PODTEMPLATE_DEPLOY_YAML
         } else {
