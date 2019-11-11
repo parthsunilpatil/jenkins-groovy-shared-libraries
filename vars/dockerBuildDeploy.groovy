@@ -5,7 +5,7 @@ def call(Map config) {
 		sh script: """
 			echo "Docker Build, Deploy & Cleanup : config = ${config}"
 			docker build -t ${config.registry}/${config.repository}:${config.tag} .
-		""", label: "Docker Build"
+		""", label: "Docker Build - image=${config.registry}/${config.repository}:${config.tag}"
 		
 		if(!config.buildOnly) {
 			withCredentials([[$class:
@@ -16,7 +16,7 @@ def call(Map config) {
 				sh script: """
 					docker login ${config.registry} -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
 					docker push ${config.registry}/${config.repository}:${config.tag}
-				""", label: "Docker Deploy"
+				""", label: "Docker Deploy - image=${config.registry}/${config.repository}:${config.tag}"
 			}
 		}
 

@@ -11,7 +11,7 @@ def call(Map config) {
 			sh script: """
 				helm repo add ${config.chartsRepositoryName} ${config.chartsRepositoryUrl}
 				helm repo list
-			""", label: "Add Helm Repository"
+			""", label: "Add Helm Repository - name=${config.chartsRepositoryName}, repo=${config.chartsRepositoryUrl}"
 		}
 
 		def helmCmd = "helm upgrade --install ${config.name} --namespace ${config.namespace}"
@@ -21,7 +21,7 @@ def call(Map config) {
 				echo "Getting src from ${config.values.gitRepository} which contains values file"
 				git clone -b ${config.values.gitBranch} ${config.values.gitRepository} .
 				pwd; ls -ltr
-			""", label: "Checkout Source for Values Files"
+			""", label: "Checkout Source for Values Files - branch=${config.values.gitBranch}, repo=${config.values.gitRepository}"
 			helmCmd += " -f ${config.values.file}"
 		} else if(config.containsKey("overrides")) {
 			config.overrides.each {
@@ -30,8 +30,7 @@ def call(Map config) {
 		}
 
 		helmCmd += " ${config.chartsRepositoryName}/${config.chartName}"
-		print "Helm command = ${helmCmd}"
-		sh script: helmCmd, label: "Install Helm Chart"
+		sh script: helmCmd, label: "Install Helm Chart - name=${config.chartName}"
 		
 	}
 }

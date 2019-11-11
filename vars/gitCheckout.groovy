@@ -6,6 +6,6 @@ def call(Map config) {
         	echo "Checkout Steps : config = ${config}"
         	git clone -b ${config.gitBranch} ${config.gitRepository} .
         	pwd; ls -ltr
-        """, label: "Source Code Checkout"
+        """, label: "Source Code Checkout - branch=${config.gitBranch},url=${config.gitRepository}"
 	}
 }
