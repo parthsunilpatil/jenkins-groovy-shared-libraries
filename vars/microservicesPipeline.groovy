@@ -17,10 +17,10 @@ def call(Map config) {
 
 				steps {
 					container('git') {
-						sh 'git --version'
+						sh script: 'git --version', label: "Retrieve Git Version"
 					}
 					container('maven') {
-						sh 'mvn --version'
+						sh script: 'mvn --version', label: "Retrieve Maven Version"
 					}
 					container('docker') {
 						sh 'docker --version'
