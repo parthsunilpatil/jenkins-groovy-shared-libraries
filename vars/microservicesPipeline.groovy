@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+def GlobalVars = new com.example.demo.GlobalVars()
 
 def call(Map config) {
 	pipeline {
