@@ -78,7 +78,7 @@ class GlobalVars {
         }
     }
 
-    static def hello(String name = 'World') {
-        echo "Hello ${name}!"
+    static def hello(script, String name = 'World') {
+        script.echo "Hello ${name}!"
     }
 }
