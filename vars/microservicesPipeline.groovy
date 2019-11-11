@@ -11,7 +11,7 @@ def call(Map config) {
 
 				agent {
 					kubernetes {
-						yaml GlobalVars.getYaml
+						yaml GlobalVars.getYaml()
 					}
 				}
 
@@ -39,7 +39,7 @@ def call(Map config) {
 
 				agent {
 					kubernetes {
-						yaml GlobalVars.getYaml 'DEPLOY'
+						yaml GlobalVars.getYaml('DEPLOY')
 					}
 				}
 
