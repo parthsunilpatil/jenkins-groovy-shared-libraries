@@ -78,7 +78,21 @@ class GlobalVars {
         }
     }
 
-    static def gitVersion() {
-        return "git --version"
+    static def gitCheckoutShell(Map config) {
+        return """
+            echo "Checkout Steps : config = ${config}"
+            git clone -b ${config.gitBranch} ${config.gitRepository} .
+            pwd
+            ls -ltr
+        """
+    }
+
+    static def mvnBuild(Map config) {
+        return """
+            Maven Build : config = ${config}
+            mvn clean package
+            pwd
+            ls -ltr
+        """
     }
 }

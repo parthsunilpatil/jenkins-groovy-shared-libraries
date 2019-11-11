@@ -1,8 +1,5 @@
 #!/usr/bin/env groovy
 import com.example.demo.GlobalVars
-import com.example.demo.PodTemplate
-
-def podTemplate = new PodTemplate(GlobalVars.getYaml())
 
 def call(Map config) {
 	pipeline {
@@ -14,14 +11,16 @@ def call(Map config) {
 
 				agent {
 					kubernetes {
-						yaml podTemplate.getYamlStr()
+						yaml GlobalVars.getYaml()
 					}
 				}
 
 				steps {
-					container('git') {
-						sh script: GlobalVars.gitVersion(), label: "Retrieve Git Version"
-					}
+					gitCheckout([
+            containerName: 'git',
+            gitRepository: 'https://github.com/parthsunilpatil/hello-techtonic.git',
+            gitBranch: 'master'
+          ])
 					container('maven') {
 						sh script: 'mvn --version', label: "Retrieve Maven Version"
 					}
