@@ -1,5 +1,8 @@
 #!/usr/bin/env groovy
 import com.example.demo.GlobalVars
+import com.example.demo.PodTemplate
+
+def podTemplate = new PodTemplate(GlobalVars.getYaml())
 
 def call(Map config) {
 	pipeline {
@@ -11,7 +14,7 @@ def call(Map config) {
 
 				agent {
 					kubernetes {
-						yaml GlobalVars.getYaml()
+						yaml podTemplate.getYamlStr()
 					}
 				}
 
