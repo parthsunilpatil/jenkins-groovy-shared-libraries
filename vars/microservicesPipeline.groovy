@@ -16,8 +16,11 @@ def call(Map config) {
 				}
 
 				steps {
+					script {
+						GlobalVars.hello()
+					}
 					container('git') {
-						GlobalVars.sh([script: 'git --version', label: "Retrieve Git Version"])
+						sh script: 'git --version', label: "Retrieve Git Version"
 					}
 					container('maven') {
 						sh script: 'mvn --version', label: "Retrieve Maven Version"

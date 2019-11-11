@@ -78,7 +78,7 @@ class GlobalVars {
         }
     }
 
-    static def sh(Map args) {
-        sh args
+    static def hello(String name = 'World') {
+        echo "Hello ${name}!"
     }
 }
