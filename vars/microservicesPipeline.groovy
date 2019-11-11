@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+import com.example.demo.GlobalVars
 
 def call(Map config) {
 	pipeline {
@@ -10,7 +11,7 @@ def call(Map config) {
 
 				agent {
 					kubernetes {
-						yaml com.example.demo.GlobalVars.PODTEMPLATE_BUILD_YAML
+						yaml GlobalVars.PODTEMPLATE_BUILD_YAML
 					}
 				}
 
@@ -38,7 +39,7 @@ def call(Map config) {
 
 				agent {
 					kubernetes {
-						yaml com.example.demo.GlobalVars.PODTEMPLATE_DEPLOY_YAML
+						yaml GlobalVars.PODTEMPLATE_DEPLOY_YAML
 					}
 				}
 
