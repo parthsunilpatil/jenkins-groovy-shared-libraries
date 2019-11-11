@@ -17,13 +17,13 @@ def call(Map config) {
 
 				steps {
 					container('git') {
-						sh script: 'git --version', label: "Retrieve Git Version"
+						GlobalVars.sh script: 'git --version', label: "Retrieve Git Version"
 					}
 					container('maven') {
-						sh script: 'mvn --version', label: "Retrieve Maven Version"
+						GlobalVars.sh script: 'mvn --version', label: "Retrieve Maven Version"
 					}
 					container('docker') {
-						sh 'docker --version'
+						GlobalVars.sh 'docker --version'
 					}
 				}
 
@@ -45,10 +45,10 @@ def call(Map config) {
 
 				steps {
 					container('helm') {
-						sh 'helm version'
+						GlobalVars.sh 'helm version'
 					}
 					container('kubectl') {
-						sh 'kubectl version'
+						GlobalVars.sh 'kubectl version'
 					}
 				}
 

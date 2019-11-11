@@ -77,4 +77,8 @@ class GlobalVars {
             return PODTEMPLATE_BUILD_YAML
         }
     }
+
+    static def sh(script, Map args) {
+        script.sh args
+    }
 }
