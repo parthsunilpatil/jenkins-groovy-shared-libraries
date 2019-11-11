@@ -8,73 +8,62 @@ def call(Map config) {
 
 		stages {
 
-			if(config.containsKey('build')) {
+			stage('Build') {
 
-        print "Build - ${config.build}"
+        agent {
+          kubernetes {
+            yaml GlobalVars.PODTEMPLATE_BUILD_YAML
+          }
+        }
 
-        stage('Build') {
+        stages {
 
-          agent {
-            kubernetes {
-              yaml GlobalVars.PODTEMPLATE_BUILD_YAML
+          stage('Checkout') {
+            steps {
+              container('git') {
+                sh 'git --version'
+              }
             }
           }
 
-          stages {
-
-            stage('Checkout') {
-              steps {
-                container('git') {
-                  sh 'git --version'
-                }
+          stage('Maven Build') {
+            steps {
+              container('mvn') {
+                sh 'mvn --version'
               }
             }
+          }
 
-            stage('Maven Build') {
-              steps {
-                container('mvn') {
-                  sh 'mvn --version'
-                }
-              }
+          stage('Docker Build') {
+            container('docker') {
+              sh 'docker --version'
             }
-
-            stage('Docker Build') {
-              container('docker') {
-                sh 'docker --version'
-              }
-            }
-
           }
 
         }
 
       }
 
-      if(config.containsKey('deploy')) {
+      stage('Deploy') {
 
-        print "Deploy - ${config.deploy}"
-        stage('Deploy') {
+        agent {
+          kubernetes {
+            yaml GlobalVars.PODTEMPLATE_DEPLOY_YAML
+          }
+        }
 
-          agent {
-            kubernetes {
-              yaml GlobalVars.PODTEMPLATE_DEPLOY_YAML
+        stages {
+
+          stage('Deploy - DEV') {
+            container('helm') {
+              sh 'helm version'
             }
           }
 
-          stages {
-
-            stage('Deploy - DEV') {
-              container('helm') {
-                sh 'helm version'
-              }
+          stage('Test - DEV') {
+            container('kubectl') {
+              sh 'kubectl version'
             }
-
-            stage('Test - DEV') {
-              container('kubectl') {
-                sh 'kubectl version'
-              }
-            }
-
           }
 
         }
