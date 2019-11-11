@@ -16,7 +16,7 @@ def call(Map config) {
           }
         }
 
-        stages {
+        steps {
 
           stage('Checkout') {
             steps {
@@ -52,7 +52,7 @@ def call(Map config) {
           }
         }
 
-        stages {
+        steps {
 
           stage('Deploy - DEV') {
             container('helm') {
