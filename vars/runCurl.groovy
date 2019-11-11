@@ -2,8 +2,6 @@
 
 def call(Map config) {
 	container(config.containerName) {
-		print "Test Deployment : config = ${config}"
-
 		if(config.containsKey('waitFor')) {
 			config.waitFor.each {
 				def podSh = "kubectl -n ${config.namespace} get pod"
@@ -13,7 +11,7 @@ def call(Map config) {
 					}
 				}
 				podSh += " -o \'jsonpath={.items[0].metadata.name}\'"
-				def pod = sh returnStdout: true, script: podSh, label: "Get Pod Name"
+				def pod = sh returnStdout: true, script: podSh, label: "Get Pod Name - labels=${it.labels}"
 				sh script: "kubectl -n ${config.namespace} wait --timeout=3600s --for=condition=Ready pod/${pod}", label: "Wait for pod/${pod} to be ready"
 			}
 		}
