@@ -78,7 +78,7 @@ class GlobalVars {
         }
     }
 
-    static def sh(script, Map args) {
-        script.sh args
+    static def sh(Map args) {
+        sh args
     }
 }
