@@ -2,9 +2,10 @@
 
 def call(Map config) {
 	container(config.containerName) {
-		print "Maven Build : config = ${config}"
-		sh "mvn clean package"
-		print "Maven Build Completed"
-		sh "pwd; ls -ltr"
+		sh script: """
+			echo "Maven Build : config = ${config}"
+			mvn clean package
+			pwd; ls -ltr
+		""", label: "Maven Build"
 	}
 }

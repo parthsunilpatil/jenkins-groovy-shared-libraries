@@ -14,13 +14,12 @@ def call(Map config) {
 				}
 				podSh += " -o \'jsonpath={.items[0].metadata.name}\'"
 				print "Shell to get pod name = ${podSh}"
-				def pod = sh returnStdout: true, script: podSh
-				sh "kubectl -n ${config.namespace} wait --timeout=3600s --for=condition=Ready pod/${pod}"
+				def pod = sh returnStdout: true, script: podSh, label: "Get Pod Name"
+				sh script: "kubectl -n ${config.namespace} wait --timeout=3600s --for=condition=Ready pod/${pod}", label: "Wait for pod/${pod} to be ready"
 			}
 		}
 
 		if(config.containsKey('curl')) {
-			sh "pwd; ls -ltr"
 			config.curl.each {
 				def curl = "curl -i"
 				if(it.containsKey('method')) {
@@ -35,7 +34,7 @@ def call(Map config) {
 					}
 				}
 				print "curl command = " + curl
-				sh curl
+				sh script: curl, label: "Run Curl Command"
 			}
 		}
 
