@@ -1,8 +1,11 @@
 #!/usr/bin/env groovy
 package com.example.demo
 
+@Grab(group = 'org.yaml', module='snakeyaml', version = "1.18")
+import org.yaml.snakeyaml.Yaml
+
 class GlobalVars {
-    static final String PODTEMPLATE_BUILD_YAML = """
+    static final String PODTEMPLATE_YAML = """
     apiVersion: v1
     kind: Pod
     spec:
@@ -28,19 +31,6 @@ class GlobalVars {
         command:
         - cat
         tty: true
-      volumes:
-      - name: dockersock
-        hostPath:
-          path: /var/run/docker.sock
-      - name: mvnm2
-        hostPath:
-          path: /c/Users/parthp/volumes/m2
-    """
-    static final String PODTEMPLATE_DEPLOY_YAML = """
-    apiVersion: v1
-    kind: Pod
-    spec:
-      containers:
       - name: helm
         image: parthpatil3110/k8s-helm:2.16.0-rc.2
         command:
@@ -49,8 +39,6 @@ class GlobalVars {
         volumeMounts:
         - name: kubeconfig
           mountPath: /root/.kube/config
-        - name: dockersock
-          mountPath: /var/run/docker.sock
       - name: kubectl
         image: parthpatil3110/k8s-kubectl-psql:custom
         command:
@@ -58,41 +46,23 @@ class GlobalVars {
         tty: true
         volumeMounts:
         - name: kubeconfig
-          mountPath: /root/.kube/config
-        - name: dockersock
-          mountPath: /var/run/docker.sock
       volumes:
       - name: dockersock
         hostPath:
           path: /var/run/docker.sock
+      - name: mvnm2
+        hostPath:
+          path: /c/Users/parthp/volumes/m2
       - name: kubeconfig
         hostPath:
           path: /c/Users/parthp/.kube/config
     """
 
     static def getYaml(String mode = 'BUILD') {
-        if(mode == 'DEPLOY') {
-            return PODTEMPLATE_DEPLOY_YAML
-        } else {
-            return PODTEMPLATE_BUILD_YAML
-        }
-    }
-
-    static def gitCheckoutShell(Map config) {
-        return """
-            echo "Checkout Steps : config = ${config}"
-            git clone -b ${config.gitBranch} ${config.gitRepository} .
-            pwd
-            ls -ltr
-        """
-    }
-
-    static def mvnBuild(Map config) {
-        return """
-            Maven Build : config = ${config}
-            mvn clean package
-            pwd
-            ls -ltr
-        """
+        Yaml yaml = new Yaml()
+        def content = yaml.load(PODTEMPLATE_YAML)
+        print "content: ${content}"
+        print "yaml: " + yaml.dump(content)
+        return yaml.dump(content)
     }
 }
