@@ -129,7 +129,7 @@ def call(Map config) {
                   }
                 }
 
-                podTemplate(label: "deploy-${it}", yaml: yaml podConfigBuilder.addAnnotations("""
+                podTemplate(label: "deploy-${it}", yaml: podConfigBuilder.addAnnotations("""
                     podTemplateClass: YamlPodConfigurationBuilder
                     podTemplateType: deploy
                   """).addLabels("""
