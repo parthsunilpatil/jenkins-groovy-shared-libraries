@@ -10,9 +10,9 @@ class GlobalVars {
     kind: Pod
     metadata:
       annotations:
-        customAnnotation: "CustomAnnotation"
+        podTemplateClass: "GlobalVars"
       labels:
-        customLabel: "CustomLabel"
+        app: "dynamic-jenkins-agent"
     spec:
       containers:
       - name: docker

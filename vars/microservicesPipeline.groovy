@@ -1,5 +1,6 @@
 #!/usr/bin/env groovy
 import com.example.demo.GlobalVars
+import com.example.demo.YamlPodConfigurationBuilder
 
 def call(Map config) {
 
@@ -15,6 +16,8 @@ def call(Map config) {
   def HELM_CHART_REPOSITORY_NAME="${config.HELM_CHART_REPOSITORY_NAME}"
   def HELM_CHART_REPOSITORY_URL="${config.HELM_CHART_REPOSITORY_URL}"
 
+  def podConfigBuilder = new YamlPodConfigurationBuilder()
+
 	pipeline {
 		agent none
 
@@ -24,7 +27,12 @@ def call(Map config) {
 
 				agent {
 					kubernetes {
-						yaml GlobalVars.getYaml()
+						yaml podConfigBuilder.addAnnotations("""
+                podTemplateClass: YamlPodConfigurationBuilder
+                podTemplateType: build
+              """).addLabels("""
+                app: "jenkins-kubernetes-plugin/dynamic-jenkins-agent"
+              """).build()
 					}
 				}
 
@@ -121,7 +129,17 @@ def call(Map config) {
                   }
                 }
 
-                podTemplate(label: "deploy-${it}", yaml: GlobalVars.getYaml('DEPLOY')) {
+                podTemplate(label: "deploy-${it}", yaml: yaml podConfigBuilder.addAnnotations("""
+                    podTemplateClass: YamlPodConfigurationBuilder
+                    podTemplateType: deploy
+                  """).addLabels("""
+                    app: "jenkins-kubernetes-plugin/dynamic-jenkins-agent"
+                  """).removeContainers("""
+                    - git
+                    - maven 
+                  """).removeContainers("""
+                    - mvnm2
+                  """).build()) {
                   node("deploy-${it}") {
 
                     stage("Deploy: ${it}") {
