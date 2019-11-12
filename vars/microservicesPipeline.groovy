@@ -135,12 +135,8 @@ def call(Map config) {
                   """).addLabels("""
                     app: DynamicJenkinsAgent
                     type: deploy
-                  """).removeContainers("""
-                    - git
-                    - maven 
-                  """).removeVolumes("""
-                    - mvnm2
-                  """).build()) {
+                  """).removeContainers(['git', 'maven'])
+                  .removeVolumes(['mvnm2']).build()) {
                   node("deploy-${it}") {
 
                     stage("Deploy: ${it}") {
