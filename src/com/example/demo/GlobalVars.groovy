@@ -8,6 +8,11 @@ class GlobalVars {
     static final String PODTEMPLATE_YAML = """
     apiVersion: v1
     kind: Pod
+    metadata:
+      annotations:
+        customAnnotation: "Custom Annotation?! Yes, I am."
+      labels:
+        customLabel: "Custom Label? Yes, I am."
     spec:
       containers:
       - name: docker
