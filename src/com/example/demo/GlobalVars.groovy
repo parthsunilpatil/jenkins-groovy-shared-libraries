@@ -59,29 +59,27 @@ class GlobalVars {
           path: /c/Users/parthp/.kube/config
     """
 
+    @NonCPS
     static def truncateYaml(content, removals) {
         def returnContent = [:] << content
         def containers = content.spec.containers
-        if(removals.containers instanceof List) {
-            removals.containers.each { name ->
-                containers.removeIf {
-                    it.name == name
-                }
+        removals.containers.each { name ->
+            containers.removeIf {
+                it.name == name
             }
         }
         returnContent.spec.containers = containers
         def volumes = content.spec.volumes
-        if(removals.volumes instanceof List) {
-            removals.volumes.each { name ->
-                volumes.removeIf {
-                    it.name == name
-                }
+        removals.volumes.each { name ->
+            volumes.removeIf {
+                it.name == name
             }
         }
         returnContent.spec.volumes = volumes
         return returnContent
     }
 
+    @NonCPS
     static def getYaml(String mode = 'BUILD') {
         Yaml yaml = new Yaml()
         def content = yaml.load(PODTEMPLATE_YAML)
