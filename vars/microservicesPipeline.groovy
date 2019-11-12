@@ -31,6 +31,7 @@ def call(Map config) {
                     ok: 'Promote', 
                     parameters: [string(defaultValue: '', description: 'Approver Comments', name: 'COMMENT', trim: false)], 
                     submitter: 'admin'
+                  }
                 }
                 podTemplate(label: 'extraStages', yaml: GlobalVars.getYaml('DEPLOY')) {
                   node('extraStages') {
