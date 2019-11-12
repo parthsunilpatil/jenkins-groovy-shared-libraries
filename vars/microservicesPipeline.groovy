@@ -137,7 +137,7 @@ def call(Map config) {
                   """).removeContainers("""
                     - git
                     - maven 
-                  """).removeContainers("""
+                  """).removeVolumes("""
                     - mvnm2
                   """).build()) {
                   node("deploy-${it}") {
