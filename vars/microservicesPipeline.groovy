@@ -62,6 +62,23 @@ def call(Map config) {
 
 			}
 
+      script {
+        if(config.containsKey('extraStages')) {
+          config.extraStages.each {
+            stage('${it}') {
+              agent {
+                kubernetes {
+                  yaml GlobalVars.getYaml()
+                }
+              }
+              steps {
+                echo "${it}"
+              }
+            }
+          }
+        }
+      }
+
 			stage('Deploy: DEV') {
 
 				agent {
@@ -72,30 +89,39 @@ def call(Map config) {
 
 				steps {
 					
-          helmInstall([
-            containerName: 'helm',
-            name: PROJECT_NAME + '-dev',
-            namespace: 'kube-dev',
-            overrides: [
-              "image.repository=${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}",
-              "image.tag=${DOCKER_TAG}",
-              "service.type=NodePort"
-            ],
-            chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
-            chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
-            chartName: HELM_CHART_NAME
-          ])
+          script {
+
+            stage('Deploy') {
+              helmInstall([
+                containerName: 'helm',
+                name: PROJECT_NAME + '-dev',
+                namespace: 'kube-dev',
+                overrides: [
+                  "image.repository=${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}",
+                  "image.tag=${DOCKER_TAG}",
+                  "service.type=NodePort"
+                ],
+                chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
+                chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
+                chartName: HELM_CHART_NAME
+              ])
+            }
+
+            stage('Test') {
+              runCurl([
+                containerName: 'kubectl',
+                namespace: 'kube-dev',
+                waitFor: [
+                  [labels: ['app.kubernetes.io/instance=' + PROJECT_NAME + '-dev', 'app.kubernetes.io/name=' + HELM_CHART_NAME]]
+                ],
+                curl: [
+                  [url: 'http://' + PROJECT_NAME + '-dev-' + HELM_CHART_NAME + '.kube-dev/status']
+                ]
+              ])
+            }
+
+          }
 					
-          runCurl([
-            containerName: 'kubectl',
-            namespace: 'kube-dev',
-            waitFor: [
-              [labels: ['app.kubernetes.io/instance=' + PROJECT_NAME + '-dev', 'app.kubernetes.io/name=' + HELM_CHART_NAME]]
-            ],
-            curl: [
-              [url: 'http://' + PROJECT_NAME + '-dev-' + HELM_CHART_NAME + '.kube-dev/status']
-            ]
-          ])
 				}
 
 			}
@@ -120,31 +146,40 @@ def call(Map config) {
         }
 
         steps {
+
+          script {
+
+            stage('Deploy') {
+              helmInstall([
+                containerName: 'helm',
+                name: PROJECT_NAME + '-prod',
+                namespace: 'kube-prod',
+                overrides: [
+                  "image.repository=${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}",
+                  "image.tag=${DOCKER_TAG}",
+                  "service.type=LoadBalancer"
+                ],
+                chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
+                chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
+                chartName: HELM_CHART_NAME
+              ])
+            }
+
+            stage('Test') {
+              runCurl([
+                containerName: 'kubectl',
+                namespace: 'kube-prod',
+                waitFor: [
+                  [labels: ['app.kubernetes.io/instance=' + PROJECT_NAME + '-prod', 'app.kubernetes.io/name=' + HELM_CHART_NAME]]
+                ],
+                curl: [
+                  [url: 'http://' + PROJECT_NAME + '-prod-' + HELM_CHART_NAME + '.kube-prod/status']
+                ]
+              ])
+            }
+
+          }
           
-          helmInstall([
-            containerName: 'helm',
-            name: PROJECT_NAME + '-prod',
-            namespace: 'kube-prod',
-            overrides: [
-              "image.repository=${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}",
-              "image.tag=${DOCKER_TAG}",
-              "service.type=LoadBalancer"
-            ],
-            chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
-            chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
-            chartName: HELM_CHART_NAME
-          ])
-          
-          runCurl([
-            containerName: 'kubectl',
-            namespace: 'kube-prod',
-            waitFor: [
-              [labels: ['app.kubernetes.io/instance=' + PROJECT_NAME + '-prod', 'app.kubernetes.io/name=' + HELM_CHART_NAME]]
-            ],
-            curl: [
-              [url: 'http://' + PROJECT_NAME + '-prod-' + HELM_CHART_NAME + '.kube-prod/status']
-            ]
-          ])
         }
 
       }
