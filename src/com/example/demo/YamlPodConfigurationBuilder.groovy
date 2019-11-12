@@ -9,7 +9,7 @@ class YamlPodConfigurationBuilder implements Serializable {
 	def podTemplate = [:]
 	def yaml = new Yaml()
 
-	PodConfigurationBuilder(String yamlStr = GlobalVars.PODTEMPLATE_YAML) {
+	YamlPodConfigurationBuilder(String yamlStr = GlobalVars.PODTEMPLATE_YAML) {
 		this.podTemplate =  yaml.load(yamlStr)
         return this
 	}
