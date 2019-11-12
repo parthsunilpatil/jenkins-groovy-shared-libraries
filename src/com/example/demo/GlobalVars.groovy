@@ -59,7 +59,7 @@ class GlobalVars {
           path: /c/Users/parthp/.kube/config
     """
 
-    static def truncateYaml(Map content, List removals) {
+    static def truncateYaml(content, removals) {
         def returnContent = [:] << content
         def containers = content.spec.containers
         removals.containers.each { name ->
