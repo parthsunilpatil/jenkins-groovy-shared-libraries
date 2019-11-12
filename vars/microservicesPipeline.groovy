@@ -46,7 +46,7 @@ def call(Map config) {
         }
       }
 			
-			stage('Build') {
+			stage('Build Stages') {
 
 				agent {
 					kubernetes {
@@ -82,25 +82,7 @@ def call(Map config) {
               ])
             }
 
-          }
-
-				}
-
-			}
-
-			stage('Deploy: DEV') {
-
-				agent {
-					kubernetes {
-						yaml GlobalVars.getYaml('DEPLOY')
-					}
-				}
-
-				steps {
-					
-          script {
-
-            stage('Deploy') {
+            stage('Deploy: Dev') {
               helmInstall([
                 containerName: 'helm',
                 name: PROJECT_NAME + '-dev',
@@ -116,7 +98,7 @@ def call(Map config) {
               ])
             }
 
-            stage('Test') {
+            stage('Test: Dev') {
               runCurl([
                 containerName: 'kubectl',
                 namespace: 'kube-dev',
@@ -141,79 +123,86 @@ def call(Map config) {
             }
 
           }
-					
+
 				}
 
 			}
 
-      stage('Promotion: DEV-PROD') {
-        steps {
-          timeout(time: 1, unit: 'DAYS') {
-              input message: 'Promote to PROD?', 
-              ok: 'Promote', 
-              parameters: [string(defaultValue: '', description: 'Approver Comments', name: 'COMMENT', trim: false)], 
-              submitter: 'admin'
-          }
-        }
-      }
-
-      stage('Deploy: PROD') {
-
-        agent {
-          kubernetes {
-            yaml GlobalVars.getYaml('DEPLOY')
-          }
-        }
+			stage('Deploy Stages') {
 
         steps {
 
           script {
 
-            stage('Deploy') {
-              helmInstall([
-                containerName: 'helm',
-                name: PROJECT_NAME + '-prod',
-                namespace: 'kube-prod',
-                overrides: [
-                  "image.repository=${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}",
-                  "image.tag=${DOCKER_TAG}",
-                  "service.type=LoadBalancer"
-                ],
-                chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
-                chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
-                chartName: HELM_CHART_NAME
-              ])
-            }
+            if(config.containsKey("deployments")) {
 
-            stage('Test') {
-              runCurl([
-                containerName: 'kubectl',
-                namespace: 'kube-prod',
-                waitFor: [
-                  [labels: ['app.kubernetes.io/instance=' + PROJECT_NAME + '-prod', 'app.kubernetes.io/name=' + HELM_CHART_NAME]]
-                ],
-                curl: [
-                  [url: 'http://' + PROJECT_NAME + '-prod-' + HELM_CHART_NAME + '.kube-prod/status']
-                ]
-              ])
-            }
+              config.deployments.each {
 
-            stage('Docker Clean-up') {
-              container('docker') {
-                sh script: """
-                  echo "Cleaning up dangling images"
-                  if ! docker rmi --force \$(docker images -f \"dangling=true\" -q); then
-                    echo "Clean Up of dangling not in use docker images completed"
-                  fi
-                """, label: "Docker Clean-up"
+                stage("Promotion: ${it}") {
+                  timeout(time: 1, unit: 'DAYS') {
+                    input message: "Promote to ${it}?", 
+                    ok: 'Promote', 
+                    parameters: [string(defaultValue: '', description: 'Approver Comments', name: 'COMMENT', trim: false)], 
+                    submitter: 'admin'
+                  }
+                }
+
+                podTemplate(label: "deploy-${it}", yaml: GlobalVars.getYaml('DEPLOY')) {
+                  node("deploy-${it}") {
+
+                    stage("Deploy: ${it}") {
+                      helmInstall([
+                        containerName: 'helm',
+                        name: "${PROJECT_NAME}-${it}",
+                        namespace: "kube-${it}",
+                        overrides: [
+                          "image.repository=${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}",
+                          "image.tag=${DOCKER_TAG}",
+                          "service.type=NodePort"
+                        ],
+                        chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
+                        chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
+                        chartName: HELM_CHART_NAME
+                      ])
+                    }
+
+                    stage("Test: ${it}") {
+                      runCurl([
+                        containerName: 'kubectl',
+                        namespace: "kube-${it}",
+                        waitFor: [
+                          [labels: ['app.kubernetes.io/instance=' + PROJECT_NAME + '-dev', 'app.kubernetes.io/name=' + HELM_CHART_NAME]]
+                        ],
+                        curl: [
+                          [url: "http://" + PROJECT_NAME + "-${it}-" + HELM_CHART_NAME + ".kube-${it}/status"]
+                        ]
+                      ])
+                    }
+
+                    stage('Docker Clean-up') {
+                      container('docker') {
+                        sh script: """
+                          echo "Cleaning up dangling images"
+                          if ! docker rmi --force \$(docker images -f \"dangling=true\" -q); then
+                            echo "Clean Up of dangling not in use docker images completed"
+                          fi
+                        """, label: "Docker Clean-up"
+                      }
+                    }
+
+                  }
+
+                }
+
               }
+
             }
 
           }
-          
+
         }
 
-      }
+			}
 
 		}
 	}
