@@ -17,6 +17,7 @@ def call(Map config) {
   def HELM_CHART_REPOSITORY_URL="${config.HELM_CHART_REPOSITORY_URL}"
 
   def podConfigBuilder = new YamlPodConfigurationBuilder()
+  def mvnBuild = new MavenBuild(this)
 
 	pipeline {
 		agent none
@@ -49,9 +50,7 @@ def call(Map config) {
             }
 
             stage('Maven Build') {
-              mvnBuild([
-                containerName: 'maven'
-              ])
+              mvnBuild.build()
             }
 
             stage('Docker Build') {
