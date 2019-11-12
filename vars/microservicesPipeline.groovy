@@ -29,21 +29,35 @@ def call(Map config) {
 				}
 
 				steps {
-					gitCheckout([
-            containerName: 'git',
-            gitRepository: GIT_REPOSITORY,
-            gitBranch: GIT_BRANCH
-          ])
-					mvnBuild([
-            containerName: 'maven'
-          ])
-					dockerBuildDeploy([
-            containerName: 'docker',
-            buildOnly: true,
-            registry: DOCKER_REGISTRY,
-            repository: DOCKER_REPOSITORY,
-            tag: DOCKER_TAG
-          ])
+
+          script {
+            
+            stage('Checkout') {
+              gitCheckout([
+                containerName: 'git',
+                gitRepository: GIT_REPOSITORY,
+                gitBranch: GIT_BRANCH
+              ])
+            }
+
+            stage('Maven Build') {
+              mvnBuild([
+                containerName: 'maven'
+              ])
+            }
+
+            stage('Docker Build') {
+              dockerBuildDeploy([
+                containerName: 'docker',
+                buildOnly: true,
+                registry: DOCKER_REGISTRY,
+                repository: DOCKER_REPOSITORY,
+                tag: DOCKER_TAG
+              ])
+            }
+
+          }
+
 				}
 
 			}
@@ -57,7 +71,8 @@ def call(Map config) {
 				}
 
 				steps {
-					helmInstall([
+					
+          helmInstall([
             containerName: 'helm',
             name: PROJECT_NAME + '-dev',
             namespace: 'kube-dev',
@@ -70,7 +85,8 @@ def call(Map config) {
             chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
             chartName: HELM_CHART_NAME
           ])
-					runCurl([
+					
+          runCurl([
             containerName: 'kubectl',
             namespace: 'kube-dev',
             waitFor: [
@@ -104,6 +120,7 @@ def call(Map config) {
         }
 
         steps {
+          
           helmInstall([
             containerName: 'helm',
             name: PROJECT_NAME + '-prod',
@@ -117,6 +134,7 @@ def call(Map config) {
             chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
             chartName: HELM_CHART_NAME
           ])
+          
           runCurl([
             containerName: 'kubectl',
             namespace: 'kube-prod',
