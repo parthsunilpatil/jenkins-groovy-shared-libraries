@@ -19,12 +19,5 @@ def call(Map config) {
 				""", label: "Docker Deploy - image=${config.registry}/${config.repository}:${config.tag}"
 			}
 		}
-
-		sh script: """
-			echo "Cleaning up dangling images"
-			if ! docker rmi --force \$(docker images -f \"dangling=true\" -q); then
-				echo "Clean Up of dangling not in use docker images completed"
-			fi
-		""", label: "Docker Clean-up"
 	}
 }
