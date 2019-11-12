@@ -11,7 +11,6 @@ class YamlPodConfigurationBuilder implements Serializable {
 
 	YamlPodConfigurationBuilder(String yamlStr = GlobalVars.PODTEMPLATE_YAML) {
 		this.podTemplate =  yaml.load(yamlStr)
-        return this
 	}
 
     @NonCPS
