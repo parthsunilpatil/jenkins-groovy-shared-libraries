@@ -15,6 +15,9 @@ def call(Map config) {
   def HELM_CHART_REPOSITORY_NAME="${config.HELM_CHART_REPOSITORY_NAME}"
   def HELM_CHART_REPOSITORY_URL="${config.HELM_CHART_REPOSITORY_URL}"
 
+  def buildYaml = GlobalVars.getYaml('BUILD')
+  def deployYaml = GlobalVars.getYaml('DEPLOY')
+
 	pipeline {
 		agent none
 
@@ -23,9 +26,10 @@ def call(Map config) {
       stage('Extra Stages') {
         steps {
           script {
+            def deployYaml = GlobalVars.getYaml('DEPLOY')
             if(config.containsKey('extraStages')) {
               config.extraStages.each {
-                podTemplate(yaml: GlobalVars.getYaml('DEPLOY')) {
+                podTemplate(yaml: """${deployYaml}""") {
                   node {
                     stage('${it}') {
                       echo "${it}"
