@@ -59,11 +59,37 @@ class GlobalVars {
           path: /c/Users/parthp/.kube/config
     """
 
+    static def truncateYaml(Map content, List removals) {
+        def returnContent = [:] << content
+        def containers = content.spec.containers
+        removals.containers.each { name ->
+            containers.removeIf {
+                it.name == name
+            }
+        }
+        returnContent.spec.containers = containers
+        def volumes = content.spec.volumes
+        removals.volumes.each { name ->
+            volumes.removeIf {
+                it.name == name
+            }
+        }
+        returnContent.spec.volumes = volumes
+        return returnContent
+    }
+
     static def getYaml(String mode = 'BUILD') {
         Yaml yaml = new Yaml()
         def content = yaml.load(PODTEMPLATE_YAML)
+        def updatedContent = [:] << content
         print "content: ${content}"
-        print "yaml: " + yaml.dump(content)
-        return yaml.dump(content)
+        if(mode == 'DEPLOY') {
+            updatedContent = truncateYaml(content, [
+                containers: ['maven', 'git'],
+                volumes: ['mvnm2']
+            ])
+        }
+        print "yaml: " + yaml.dump(updatedContent)
+        return yaml.dump(updatedContent)
     }
 }
