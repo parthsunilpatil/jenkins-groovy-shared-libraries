@@ -12,7 +12,6 @@ class MavenBuild implements Serializable {
 	def build(String containerName = "maven") {
 		steps.container(containerName) {
 			steps.sh script: """
-				echo "Maven Build : config = ${config}"
 				mvn clean package
 				pwd; ls -ltr
 			""", label: "Maven Build"
