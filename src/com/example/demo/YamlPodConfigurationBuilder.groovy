@@ -73,7 +73,7 @@ class YamlPodConfigurationBuilder {
     @NonCPS
     def removeContainers(List names = []) {
         names.each { name ->
-            def containers = [:] << podTemplate.spec.containers
+            def containers = [] << podTemplate.spec.containers
             containers.removeIf { containerName ->
                 containerName == name
             }
@@ -98,7 +98,7 @@ class YamlPodConfigurationBuilder {
     @NonCPS
     def removeVolumes(List names = []) {
         names.each { name ->
-            def volumes = [:] << podTemplate.spec.volumes
+            def volumes = [] << podTemplate.spec.volumes
             volumes.removeIf { containerName ->
                 containerName == name
             }
