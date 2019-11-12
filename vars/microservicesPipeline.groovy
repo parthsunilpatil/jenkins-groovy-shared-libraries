@@ -25,6 +25,13 @@ def call(Map config) {
           script {
             if(config.containsKey('extraStages')) {
               config.extraStages.each {
+                stage("Promotion: ${it}") {
+                  timeout(time: 1, unit: 'DAYS') {
+                    input message: "Promote to ${it}?", 
+                    ok: 'Promote', 
+                    parameters: [string(defaultValue: '', description: 'Approver Comments', name: 'COMMENT', trim: false)], 
+                    submitter: 'admin'
+                }
                 podTemplate(label: 'extraStages', yaml: GlobalVars.getYaml('DEPLOY')) {
                   node('extraStages') {
                     stage("${it}") {
