@@ -10,9 +10,9 @@ class GlobalVars {
     kind: Pod
     metadata:
       annotations:
-        customAnnotation: "Custom Annotation?! Yes, I am."
+        customAnnotation: "CustomAnnotation"
       labels:
-        customLabel: "Custom Label? Yes, I am."
+        customLabel: "CustomLabel"
     spec:
       containers:
       - name: docker
