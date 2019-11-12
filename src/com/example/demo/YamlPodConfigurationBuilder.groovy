@@ -35,6 +35,7 @@ class YamlPodConfigurationBuilder {
 	@NonCPS
 	def addLabels(String yamlStr = "") {
         if(yamlStr != "") {
+            def labels = new Yaml().load(yamlStr)
             labels.each {
                 initMap(podTemplate, "metadata")
                 initMap(podTemplate.metadata, "labels")
