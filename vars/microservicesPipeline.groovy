@@ -19,6 +19,24 @@ def call(Map config) {
 		agent none
 
 		stages {
+
+      stage('Extra Stages') {
+        steps {
+          script {
+            if(config.containsKey('extraStages')) {
+              config.extraStages.each {
+                podTemplate(yaml: GlobalVars.getYaml('DEPLOY')) {
+                  node {
+                    stage('${it}') {
+                      echo "${it}"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
 			
 			stage('Build') {
 
@@ -61,27 +79,6 @@ def call(Map config) {
 				}
 
 			}
-
-      stage('Extra Stages') {
-        steps {
-          script {
-            if(config.containsKey('extraStages')) {
-              config.extraStages.each {
-                stage('${it}') {
-                  agent {
-                    kubernetes {
-                      yaml GlobalVars.getYaml()
-                    }
-                  }
-                  steps {
-                    echo "${it}"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
 
 			stage('Deploy: DEV') {
 
