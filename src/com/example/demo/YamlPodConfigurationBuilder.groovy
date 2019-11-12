@@ -4,13 +4,12 @@ package com.example.demo
 @Grab(group = 'org.yaml', module='snakeyaml', version = "1.18")
 import org.yaml.snakeyaml.Yaml
 
-class YamlPodConfigurationBuilder implements Serializable {
+class YamlPodConfigurationBuilder {
 	
 	def podTemplate = [:]
-	def yaml = new Yaml()
 
 	YamlPodConfigurationBuilder(String yamlStr = GlobalVars.PODTEMPLATE_YAML) {
-		this.podTemplate =  yaml.load(yamlStr)
+		this.podTemplate =  new Yaml().load(yamlStr)
 	}
 
     @NonCPS
@@ -23,7 +22,7 @@ class YamlPodConfigurationBuilder implements Serializable {
 	@NonCPS
 	def addAnnotations(String yamlStr = "") {
 		if(yamlStr != "") {
-            def annotations = yaml.load(yamlStr)
+            def annotations = new Yaml().load(yamlStr)
 			annotations.each {
                 initMap(podTemplate, "metadata")
                 initMap(podTemplate.metadata, "annotations")
@@ -48,7 +47,7 @@ class YamlPodConfigurationBuilder implements Serializable {
 	@NonCPS
 	def addSpec(String yamlStr = "") {
 		if(yamlStr != "") {
-			def spec = yaml.load(yamlStr)
+			def spec = new Yaml().load(yamlStr)
             spec.each {
                 initMap(podTemplate, "spec")
                 podTemplate.spec.put(it.key, it.value)
@@ -60,7 +59,7 @@ class YamlPodConfigurationBuilder implements Serializable {
 	@NonCPS
 	def addContainers(String yamlStr = "") {
         if(yamlStr != "") {
-            def containers = yaml.load(yamlStr)
+            def containers = new Yaml().load(yamlStr)
             containers.each {
                 initMap(podTemplate, "spec")
                 initMap(podTemplate.spec, "containers")
@@ -85,7 +84,7 @@ class YamlPodConfigurationBuilder implements Serializable {
     @NonCPS
     def addVolumes(String yamlStr = "") {
         if(yamlStr != "") {
-            def volumes = yaml.load(yamlStr)
+            def volumes = new Yaml().load(yamlStr)
             volumes.each {
                initMap(podTemplate, "spec")
                initMap(podTemplate.spec, "volumes")
@@ -109,7 +108,7 @@ class YamlPodConfigurationBuilder implements Serializable {
 
     @NonCPS
     def build() {
-        return yaml.dump(podTemplate)
+        return new Yaml().dump(podTemplate)
     }
 	
 }
