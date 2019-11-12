@@ -62,16 +62,20 @@ class GlobalVars {
     static def truncateYaml(content, removals) {
         def returnContent = [:] << content
         def containers = content.spec.containers
-        removals.containers.each { name ->
-            containers.removeIf {
-                it.name == name
+        if(removals.containers instanceof List) {
+            removals.containers.each { name ->
+                containers.removeIf {
+                    it.name == name
+                }
             }
         }
         returnContent.spec.containers = containers
         def volumes = content.spec.volumes
-        removals.volumes.each { name ->
-            volumes.removeIf {
-                it.name == name
+        if(removals.volumes instanceof List) {
+            removals.volumes.each { name ->
+                volumes.removeIf {
+                    it.name == name
+                }
             }
         }
         returnContent.spec.volumes = volumes
@@ -89,7 +93,7 @@ class GlobalVars {
                 volumes: ['mvnm2']
             ])
         }
-        print "yaml: " + yaml.dump(updatedContent)
+        print " Updated yaml: " + yaml.dump(updatedContent)
         return yaml.dump(updatedContent)
     }
 }
