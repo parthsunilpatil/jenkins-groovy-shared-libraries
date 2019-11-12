@@ -62,17 +62,21 @@ def call(Map config) {
 
 			}
 
-      script {
-        if(config.containsKey('extraStages')) {
-          config.extraStages.each {
-            stage('${it}') {
-              agent {
-                kubernetes {
-                  yaml GlobalVars.getYaml()
+      stage('Extra Stages') {
+        steps {
+          script {
+            if(config.containsKey('extraStages')) {
+              config.extraStages.each {
+                stage('${it}') {
+                  agent {
+                    kubernetes {
+                      yaml GlobalVars.getYaml()
+                    }
+                  }
+                  steps {
+                    echo "${it}"
+                  }
                 }
-              }
-              steps {
-                echo "${it}"
               }
             }
           }
