@@ -24,9 +24,10 @@ def call(Map config) {
         steps {
           script {
             def deployYaml = GlobalVars.getYaml('DEPLOY')
+            print "deployYaml: ${deployYaml}"
             if(config.containsKey('extraStages')) {
               config.extraStages.each {
-                podTemplate(yaml: """${deployYaml}""") {
+                podTemplate(yaml: deployYaml) {
                   node {
                     stage('${it}') {
                       echo "${it}"
