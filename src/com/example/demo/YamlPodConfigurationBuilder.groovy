@@ -26,7 +26,7 @@ class YamlPodConfigurationBuilder {
 			annotations.each {
                 initMap(podTemplate, "metadata")
                 initMap(podTemplate.metadata, "annotations")
-				podTemplate.annotations.put(it.key, it.value)
+				podTemplate.metadata.annotations.put(it.key, it.value)
 			}
 		}
 		return this
@@ -38,7 +38,7 @@ class YamlPodConfigurationBuilder {
             labels.each {
                 initMap(podTemplate, "metadata")
                 initMap(podTemplate.metadata, "labels")
-                podTemplate.labels.put(it.key, it.value)
+                podTemplate.metadata.labels.put(it.key, it.value)
             }
         }
         return this
