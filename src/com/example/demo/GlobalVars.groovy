@@ -46,6 +46,7 @@ class GlobalVars {
         tty: true
         volumeMounts:
         - name: kubeconfig
+          mountPath: /root/.kube/config
       volumes:
       - name: dockersock
         hostPath:
