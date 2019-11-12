@@ -15,9 +15,6 @@ def call(Map config) {
   def HELM_CHART_REPOSITORY_NAME="${config.HELM_CHART_REPOSITORY_NAME}"
   def HELM_CHART_REPOSITORY_URL="${config.HELM_CHART_REPOSITORY_URL}"
 
-  def buildYaml = GlobalVars.getYaml('BUILD')
-  def deployYaml = GlobalVars.getYaml('DEPLOY')
-
 	pipeline {
 		agent none
 
