@@ -31,7 +31,7 @@ def call(Map config) {
                 podTemplateClass: YamlPodConfigurationBuilder
                 podTemplateType: build
               """).addLabels("""
-                app: jenkins-kubernetes-plugin/dynamic-jenkins-agent
+                app: DynamicJenkinsAgent
               """).build()
 					}
 				}
@@ -133,7 +133,7 @@ def call(Map config) {
                     podTemplateClass: YamlPodConfigurationBuilder
                     podTemplateType: deploy
                   """).addLabels("""
-                    app: jenkins-kubernetes-plugin/dynamic-jenkins-agent
+                    app: DynamicJenkinsAgent
                     type: deploy
                   """).removeContainers("""
                     - git
