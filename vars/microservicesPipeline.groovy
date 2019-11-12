@@ -77,10 +77,10 @@ def call(Map config) {
                 containerName: 'kubectl',
                 namespace: 'kube-dev',
                 waitFor: [
-                  [labels: ['app.kubernetes.io/instance=' + PROJECT_NAME + '-dev', 'app.kubernetes.io/name=' + HELM_CHART_NAME]]
+                  [labels: ["app.kubernetes.io/instance=${PROJECT_NAME}-dev", "app.kubernetes.io/name=${HELM_CHART_NAME}"]]
                 ],
                 curl: [
-                  [url: 'http://' + PROJECT_NAME + '-dev-' + HELM_CHART_NAME + '.kube-dev/status']
+                  [url: "http://${PROJECT_NAME}-dev-${HELM_CHART_NAME}.kube-dev/status"]
                 ]
               ])
             }
@@ -145,10 +145,10 @@ def call(Map config) {
                         containerName: 'kubectl',
                         namespace: "kube-${it}",
                         waitFor: [
-                          [labels: ['app.kubernetes.io/instance=' + PROJECT_NAME + '-dev', 'app.kubernetes.io/name=' + HELM_CHART_NAME]]
+                          [labels: ["app.kubernetes.io/instance=${PROJECT_NAME}-${it}", "app.kubernetes.io/name=${HELM_CHART_NAME}"]]
                         ],
                         curl: [
-                          [url: "http://" + PROJECT_NAME + "-${it}-" + HELM_CHART_NAME + ".kube-${it}/status"]
+                          [url: "http://${PROJECT_NAME}-${it}-${HELM_CHART_NAME}.kube-${it}/status"]
                         ]
                       ])
                     }
