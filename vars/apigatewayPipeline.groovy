@@ -32,7 +32,7 @@ def call(Map config) {
                         DeployStages.stages(this, [
                             [
                                 method: 'helm',
-                                stageName: 'Deploy API Gateway: Kong'
+                                stageName: 'Deploy API Gateway: Kong',
                                 containerName: 'helm',
                                 name: 'kong'
                                 namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
@@ -42,7 +42,7 @@ def call(Map config) {
                             ],
                             [
                                 method: 'helm',
-                                stageName: 'Deploy Dashboard: Konga'
+                                stageName: 'Deploy Dashboard: Konga',
                                 containerName: 'helm',
                                 name: 'konga'
                                 namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
@@ -52,7 +52,7 @@ def call(Map config) {
                             ],
                             [
                                 method: 'test',
-                                stageName: 'Test Kong'
+                                stageName: 'Test Kong',
                                 containerName: 'kubectl'
                                 namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
                                 waitFor: [
