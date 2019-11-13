@@ -100,7 +100,7 @@ class DeployStages {
     }
 
     static def dockerCleanup(script, config) {
-        container(config.containerName) {
+        script.container(config.containerName) {
             script.sh script: """
               echo "Cleaning up dangling images"
               if ! docker rmi --force \$(docker images -f \"dangling=true\" -q); then

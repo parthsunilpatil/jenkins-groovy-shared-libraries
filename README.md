@@ -20,13 +20,10 @@ The directory structure of a Shared Library repository is as follows:
 |   +- com
 |       +- example
 |           +- demo  
-|               +- GlobalVars.groovy    #  
+|               +- GlobalVars.groovy    				 # Global Variables
+|               +- YamlPodConfigurationBuilder.groovy    # Pod Configuration Builder from Yaml String
+|               +- BuildStages.groovy    				 # Static Build Stages Definitions
+|               +- DeployStages.groovy    				 # Static Deploy Stages Definitions
 +- vars
-|   +- createYaml.groovy                #
-|   +- dockerBuildDeploy.groovy         #
-|   +- gitCheckout.groovy               #
-|   +- helmInstall.groovy               #
-|   +- mvnBuild.groovy                  #
-|   +- runCurl.groovy                   #
-|   +- sayHello.groovy                  #
+|   +- microservicesPipeline.groovy                		 # Microservices Deployment Pipeline into kubernetes
 ```
