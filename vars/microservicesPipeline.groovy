@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 import com.example.demo.GlobalVars
 import com.example.demo.YamlPodConfigurationBuilder
-import com.example.demo.MavenBuild
+import com.example.demo.BuildStages
 
 def call(Map config) {
 
@@ -18,7 +18,6 @@ def call(Map config) {
   def HELM_CHART_REPOSITORY_URL="${config.HELM_CHART_REPOSITORY_URL}"
 
   def podConfigBuilder = new YamlPodConfigurationBuilder()
-  def mvnBuild = new MavenBuild(this)
 
 	pipeline {
 		agent none
@@ -41,8 +40,26 @@ def call(Map config) {
 				steps {
 
           script {
+
+            BuildStages.stages(this, [
+              git: [
+                containerName: 'git',
+                gitRepository: GIT_REPOSITORY,
+                gitBranch: GIT_BRANCH
+              ],
+              maven: [
+                containerName: 'maven'
+              ],
+              docker: [
+                containerName: 'docker',
+                buildOnly: true,
+                registry: DOCKER_REGISTRY,
+                repository: DOCKER_REPOSITORY,
+                tag: DOCKER_TAG
+              ]
+            ])
             
-            stage('Checkout') {
+            /*stage('Checkout') {
               gitCheckout([
                 containerName: 'git',
                 gitRepository: GIT_REPOSITORY,
@@ -62,7 +79,7 @@ def call(Map config) {
                 repository: DOCKER_REPOSITORY,
                 tag: DOCKER_TAG
               ])
-            }
+            }*/
 
             stage('Deploy: Dev') {
               helmInstall([
