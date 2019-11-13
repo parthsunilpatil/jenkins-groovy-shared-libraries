@@ -34,7 +34,7 @@ def call(Map config) {
                                 method: 'helm',
                                 stageName: 'Deploy API Gateway: Kong',
                                 containerName: 'helm',
-                                name: 'kong'
+                                name: 'kong',
                                 namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
                                 chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
                                 chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
@@ -44,7 +44,7 @@ def call(Map config) {
                                 method: 'helm',
                                 stageName: 'Deploy Dashboard: Konga',
                                 containerName: 'helm',
-                                name: 'konga'
+                                name: 'konga',
                                 namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
                                 chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
                                 chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
@@ -53,7 +53,7 @@ def call(Map config) {
                             [
                                 method: 'test',
                                 stageName: 'Test Kong',
-                                containerName: 'kubectl'
+                                containerName: 'kubectl',
                                 namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
                                 waitFor: [
                                     [labels: ['app=kong', 'release=kong', 'component=app']]
