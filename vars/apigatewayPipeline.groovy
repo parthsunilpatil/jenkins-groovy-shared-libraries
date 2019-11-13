@@ -14,14 +14,16 @@ def call(Map config) {
     pipeline {
         
         agent {
-            kuberentes yaml podConfigBuilder.addAnnotations("""
-                    podTemplateClass: YamlPodConfigurationBuilder
-                    podTemplateType: deploy
-                """).addLabels("""
-                    app: DynamicJenkinsAgent
-                    type: deploy
-                """).removeContainers(['git', 'maven'])
-                removeVolumes(['mvnm2']).build()
+            kuberentes {
+                yaml podConfigBuilder.addAnnotations("""
+                        podTemplateClass: YamlPodConfigurationBuilder
+                        podTemplateType: deploy
+                    """).addLabels("""
+                        app: DynamicJenkinsAgent
+                        type: deploy
+                    """).removeContainers(['git', 'maven'])
+                    removeVolumes(['mvnm2']).build()    
+            }
         }
 
         stages {
