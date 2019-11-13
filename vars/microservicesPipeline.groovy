@@ -109,18 +109,18 @@ def call(Map config) {
 
             if(config.containsKey("deployments")) {
 
-              config.deployments.each {
+              config.deployments.each { deployment ->
 
-                stage("Promotion: ${it}") {
+                stage("Promotion: ${deployment}") {
                   timeout(time: 1, unit: 'DAYS') {
-                    input message: "Promote to ${it}?", 
+                    input message: "Promote to ${deployment}?", 
                     ok: 'Promote', 
                     parameters: [string(defaultValue: '', description: 'Approver Comments', name: 'COMMENT', trim: false)], 
                     submitter: 'admin'
                   }
                 }
 
-                podTemplate(label: "deploy-${it}", yaml: podConfigBuilder.addAnnotations("""
+                podTemplate(label: "deploy-${deployment}", yaml: podConfigBuilder.addAnnotations("""
                     podTemplateClass: YamlPodConfigurationBuilder
                     podTemplateType: deploy
                   """).addLabels("""
@@ -128,13 +128,14 @@ def call(Map config) {
                     type: deploy
                   """).removeContainers(['git', 'maven'])
                   .removeVolumes(['mvnm2']).build()) {
-                  node("deploy-${it}") {
+                  node("deploy-${deployment}") {
 
-                    stage("Deploy: ${it}") {
-                      helmInstall([
+                    DeployStages.stages(this, [
+                      helm: [
+                        stageName: "Deploy: ${deployment}",
                         containerName: 'helm',
-                        name: "${PROJECT_NAME}-${it}",
-                        namespace: "kube-${it}",
+                        name: "${PROJECT_NAME}-${deployment}",
+                        namespace: "kube-${deployment}",
                         overrides: [
                           "image.repository=${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}",
                           "image.tag=${DOCKER_TAG}",
@@ -143,32 +144,23 @@ def call(Map config) {
                         chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
                         chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
                         chartName: HELM_CHART_NAME
-                      ])
-                    }
-
-                    stage("Test: ${it}") {
-                      runCurl([
+                      ],
+                      test: [
+                        stageName: "Test: ${deployment}",
                         containerName: 'kubectl',
-                        namespace: "kube-${it}",
+                        namespace: "kube-${deployment}",
                         waitFor: [
-                          [labels: ["app.kubernetes.io/instance=${PROJECT_NAME}-${it}", "app.kubernetes.io/name=${HELM_CHART_NAME}"]]
+                          [labels: ["app.kubernetes.io/instance=${PROJECT_NAME}-${deployment}", "app.kubernetes.io/name=${HELM_CHART_NAME}"]]
                         ],
                         curl: [
-                          [url: "http://${PROJECT_NAME}-${it}-${HELM_CHART_NAME}.kube-${it}/status"]
+                          [url: "http://${PROJECT_NAME}-${deployment}-${HELM_CHART_NAME}.kube-${deployment}/status"]
                         ]
-                      ])
-                    }
-
-                    stage('Docker Clean-up') {
-                      container('docker') {
-                        sh script: """
-                          echo "Cleaning up dangling images"
-                          if ! docker rmi --force \$(docker images -f \"dangling=true\" -q); then
-                            echo "Clean Up of dangling not in use docker images completed"
-                          fi
-                        """, label: "Docker Clean-up"
-                      }
-                    }
+                      ],
+                      dockerCleanup: [
+                        stageName: 'Docker Image Cleanup',
+                        containerName: 'docker'
+                      ]
+                    ])
 
                   }
 
@@ -185,5 +177,7 @@ def call(Map config) {
 			}
 
 		}
+
 	}
+  
 } 

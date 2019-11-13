@@ -73,7 +73,7 @@ class DeployStages {
                         }
                     }
                     podSh += " -o \'jsonpath={.items[0].metadata.name}\'"
-                    def pod = sh returnStdout: true, script: podSh, label: "Get Pod Name - labels=${it.labels}"
+                    def pod = script.sh returnStdout: true, script: podSh, label: "Get Pod Name - labels=${it.labels}"
                     script.sh script: "kubectl -n ${config.namespace} wait --timeout=3600s --for=condition=Ready pod/${pod}", label: "Wait for pod/${pod} to be ready"
                 }
             }
