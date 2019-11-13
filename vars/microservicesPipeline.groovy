@@ -2,6 +2,7 @@
 import com.example.demo.GlobalVars
 import com.example.demo.YamlPodConfigurationBuilder
 import com.example.demo.BuildStages
+import com.example.demo.DeployStages
 
 def call(Map config) {
 
@@ -61,31 +62,10 @@ def call(Map config) {
                 tag: DOCKER_TAG
               ]
             ])
-            
-            /*stage('Checkout') {
-              gitCheckout([
-                containerName: 'git',
-                gitRepository: GIT_REPOSITORY,
-                gitBranch: GIT_BRANCH
-              ])
-            }
 
-            stage('Maven Build') {
-              mvnBuild.build()
-            }
-
-            stage('Docker Build') {
-              dockerBuildDeploy([
-                containerName: 'docker',
-                buildOnly: true,
-                registry: DOCKER_REGISTRY,
-                repository: DOCKER_REPOSITORY,
-                tag: DOCKER_TAG
-              ])
-            }*/
-
-            stage('Deploy: Dev') {
-              helmInstall([
+            DeployStages.stages(this, [
+              helm: [
+                stageName: 'Deploy: dev',
                 containerName: 'helm',
                 name: PROJECT_NAME + '-dev',
                 namespace: 'kube-dev',
@@ -97,11 +77,9 @@ def call(Map config) {
                 chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
                 chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
                 chartName: HELM_CHART_NAME
-              ])
-            }
-
-            stage('Test: Dev') {
-              runCurl([
+              ],
+              test: [
+                stageName: 'Test: dev',
                 containerName: 'kubectl',
                 namespace: 'kube-dev',
                 waitFor: [
@@ -110,19 +88,12 @@ def call(Map config) {
                 curl: [
                   [url: "http://${PROJECT_NAME}-dev-${HELM_CHART_NAME}.kube-dev/status"]
                 ]
-              ])
-            }
-
-            stage('Docker Clean-up') {
-              container('docker') {
-                sh script: """
-                  echo "Cleaning up dangling images"
-                  if ! docker rmi --force \$(docker images -f \"dangling=true\" -q); then
-                    echo "Clean Up of dangling not in use docker images completed"
-                  fi
-                """, label: "Docker Clean-up"
-              }
-            }
+              ],
+              dockerCleanup: [
+                stageName: 'Docker Image Cleanup'
+                containerName: 'docker'
+              ]
+            ])
 
           }
 
