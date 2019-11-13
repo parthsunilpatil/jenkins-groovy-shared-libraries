@@ -14,7 +14,7 @@ def call(Map config) {
     pipeline {
         
         agent {
-            kuberentes {
+            kubernetes {
                 yaml podConfigBuilder.addAnnotations("""
                         podTemplateClass: YamlPodConfigurationBuilder
                         podTemplateType: deploy
