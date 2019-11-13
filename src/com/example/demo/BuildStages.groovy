@@ -44,30 +44,28 @@ class BuildStages {
         }
     }
 
-    static def stages(script, config) {
-        
-        if(config.containsKey('stages')) {
-        
-            if(config.stages.containsKey('git')) {
-                script.stage('Git Checkout') {
-                    git(script, config.git)
-                }
-            }
-
-            if(config.stages.containsKey('maven')) {
-                script.stage('Maven Build') {
-                    mvn(script, config.maven)
-                }
-            }
-
-            if(config.stages.containsKey('docker')) {
-                script.stage('Docker Build') {
-                    dockerBuildDeploy(script, config.docker)
-                }
-            }
-
+    static def factory(script, name, config) {
+        switch(name) {
+            case "git":
+                git(script, config)
+                break
+            case "maven":
+                mvn(script, config)
+                break
+            case "docker":
+                dockerBuildDeploy(script, config)
+                break
+            default:
+                break
         }
+    }
 
+    static def stages(script, stagesConfig) {
+        stagesConfig.each { stage, config -> 
+            script.stage(config.stageName) {
+                factory(script, stage, config)
+            }
+        }
     }
 
 }

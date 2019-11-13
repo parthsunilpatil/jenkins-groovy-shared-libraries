@@ -43,14 +43,17 @@ def call(Map config) {
 
             BuildStages.stages(this, [
               git: [
+                stageName: 'Git Checkout'
                 containerName: 'git',
                 gitRepository: GIT_REPOSITORY,
                 gitBranch: GIT_BRANCH
               ],
               maven: [
+                stageName: 'Maven Build'
                 containerName: 'maven'
               ],
               docker: [
+                stageName: 'Docker Build & Deploy'
                 containerName: 'docker',
                 buildOnly: true,
                 registry: DOCKER_REGISTRY,
