@@ -22,7 +22,7 @@ def call(Map config) {
                         app: DynamicJenkinsAgent
                         type: deploy
                     """).removeContainers(['git', 'maven'])
-                    removeVolumes(['mvnm2']).build()    
+                    .removeVolumes(['mvnm2']).build()    
             }
         }
 
