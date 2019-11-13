@@ -90,7 +90,7 @@ def call(Map config) {
                 ]
               ],
               dockerCleanup: [
-                stageName: 'Docker Image Cleanup'
+                stageName: 'Docker Image Cleanup',
                 containerName: 'docker'
               ]
             ])
