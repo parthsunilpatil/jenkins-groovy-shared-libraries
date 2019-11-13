@@ -44,19 +44,19 @@ def call(Map config) {
 
             BuildStages.stages(this, [
               [
-                method: 'git',
+                utility: 'git',
                 stageName: 'Git Checkout',
                 containerName: 'git',
                 gitRepository: GIT_REPOSITORY,
                 gitBranch: GIT_BRANCH
               ],
               [
-                method: 'maven',
+                utility: 'maven',
                 stageName: 'Maven Build',
                 containerName: 'maven'
               ],
               [
-                method: 'docker',
+                utility: 'docker',
                 stageName: 'Docker Build & Deploy',
                 containerName: 'docker',
                 buildOnly: true,
@@ -68,7 +68,7 @@ def call(Map config) {
 
             DeployStages.stages(this, [
               [
-                method: 'helm',
+                utility: 'helm',
                 stageName: 'Deploy: dev',
                 containerName: 'helm',
                 name: PROJECT_NAME + '-dev',
@@ -83,7 +83,7 @@ def call(Map config) {
                 chartName: HELM_CHART_NAME
               ],
               [
-                method: 'test',
+                utility: 'test',
                 stageName: 'Test: dev',
                 containerName: 'kubectl',
                 namespace: 'kube-dev',
@@ -138,7 +138,7 @@ def call(Map config) {
 
                     DeployStages.stages(this, [
                       [
-                        method: 'helm',
+                        utility: 'helm',
                         stageName: "Deploy: ${deployment}",
                         containerName: 'helm',
                         name: "${PROJECT_NAME}-${deployment}",
@@ -153,7 +153,7 @@ def call(Map config) {
                         chartName: HELM_CHART_NAME
                       ],
                       [
-                        method: 'test',
+                        utility: 'test',
                         stageName: "Test: ${deployment}",
                         containerName: 'kubectl',
                         namespace: "kube-${deployment}",
@@ -165,7 +165,7 @@ def call(Map config) {
                         ]
                       ],
                       [
-                        method: 'dockerCleanup',
+                        utility: 'dockerCleanup',
                         stageName: 'Docker Image Cleanup',
                         containerName: 'docker'
                       ]

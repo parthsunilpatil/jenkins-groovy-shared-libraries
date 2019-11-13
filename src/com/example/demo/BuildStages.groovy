@@ -45,7 +45,7 @@ class BuildStages {
     }
 
     static def factory(script, config) {
-        switch(config.method) {
+        switch(config.utility) {
             case "git":
                 git(script, config)
                 break

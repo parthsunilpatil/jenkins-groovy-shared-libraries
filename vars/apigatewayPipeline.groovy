@@ -33,7 +33,7 @@ def call(Map config) {
                     script {
                         DeployStages.stages(this, [
                             [
-                                method: 'helm',
+                                utility: 'helm',
                                 stageName: 'Deploy API Gateway: Kong',
                                 containerName: 'helm',
                                 name: 'kong',
@@ -43,7 +43,7 @@ def call(Map config) {
                                 chartName: 'kong'
                             ],
                             [
-                                method: 'helm',
+                                utility: 'helm',
                                 stageName: 'Deploy Dashboard: Konga',
                                 containerName: 'helm',
                                 name: 'konga',
@@ -53,12 +53,17 @@ def call(Map config) {
                                 chartName: 'konga'
                             ],
                             [
-                                method: 'test',
+                                utility: 'test',
                                 stageName: 'Test Kong',
                                 containerName: 'kubectl',
                                 namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
                                 waitFor: [
                                     [labels: ['app=kong', 'release=kong', 'component=app']]
+                                ],
+                                sh: [
+                                    cmd: """
+                                        kubectl get all -n ${PROJECT_K8S_DEPLOYMENT_NAMESPACE}
+                                    """
                                 ],
                                 curl: [
                                     [

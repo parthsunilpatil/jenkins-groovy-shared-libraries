@@ -12,7 +12,7 @@ class DeployStages {
     }
 
     static def factory(script, config) {
-        switch(config.method) {
+        switch(config.utility) {
             case "helm":
                 helm(script, config)
                 break
@@ -78,23 +78,26 @@ class DeployStages {
                 }
             }
 
-            if(config.containsKey('curl')) {
-                config.curl.each {
-                    def curl = "curl -i"
-                    if(it.containsKey('method')) {
-                        curl += " -X ${it.method}"
-                    }
-                    if(it.containsKey('url')) {
-                        curl += " --url ${it.url}"
-                    }
-                    if(it.containsKey('data')) {
-                        it.data.each {
-                            curl += " --data \'${it}\'"
-                        }
-                    }
-                    script.sh script: curl, label: "Run Curl Command - url=${it.url}"
+            config.curl.each {
+                def curl = "curl -i"
+                if(it.containsKey('method')) {
+                    curl += " -X ${it.method}"
                 }
+                if(it.containsKey('url')) {
+                    curl += " --url ${it.url}"
+                }
+                if(it.containsKey('data')) {
+                    it.data.each {
+                        curl += " --data \'${it}\'"
+                    }
+                }
+                script.sh script: curl, label: "Run Curl Command - url=${it.url}"
             }
+
+            config.sh.each { shell ->
+                script.sh script: shell.cmd, label: "Custom Shell Script"
+            }
+
 
         }
     }
