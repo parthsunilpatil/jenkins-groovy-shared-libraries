@@ -44,8 +44,8 @@ class BuildStages {
         }
     }
 
-    static def factory(script, name, config) {
-        switch(name) {
+    static def factory(script, config) {
+        switch(config.method) {
             case "git":
                 git(script, config)
                 break
@@ -61,9 +61,9 @@ class BuildStages {
     }
 
     static def stages(script, stagesConfig) {
-        stagesConfig.each { stage, config -> 
+        stagesConfig.each { config -> 
             script.stage(config.stageName) {
-                factory(script, stage, config)
+                factory(script, config)
             }
         }
     }

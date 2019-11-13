@@ -4,15 +4,15 @@ package com.example.demo
 class DeployStages {
 
     static def stages(script, stagesConfig) {
-        stagesConfig.each { stage, config -> 
+        stagesConfig.each { config -> 
             script.stage(config.stageName) {
-                factory(script, stage, config)
+                factory(script, config)
             }
         }
     }
 
-    static def factory(script, name, config) {
-        switch(name) {
+    static def factory(script, config) {
+        switch(config.method) {
             case "helm":
                 helm(script, config)
                 break

@@ -43,17 +43,20 @@ def call(Map config) {
           script {
 
             BuildStages.stages(this, [
-              git: [
+              [
+                method: 'git'
                 stageName: 'Git Checkout',
                 containerName: 'git',
                 gitRepository: GIT_REPOSITORY,
                 gitBranch: GIT_BRANCH
               ],
-              maven: [
+              [
+                method: 'maven'
                 stageName: 'Maven Build',
                 containerName: 'maven'
               ],
-              docker: [
+              [
+                method: 'docker'
                 stageName: 'Docker Build & Deploy',
                 containerName: 'docker',
                 buildOnly: true,
@@ -64,7 +67,8 @@ def call(Map config) {
             ])
 
             DeployStages.stages(this, [
-              helm: [
+              [
+                method: 'helm'
                 stageName: 'Deploy: dev',
                 containerName: 'helm',
                 name: PROJECT_NAME + '-dev',
@@ -78,7 +82,8 @@ def call(Map config) {
                 chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
                 chartName: HELM_CHART_NAME
               ],
-              test: [
+              [
+                method: 'test'
                 stageName: 'Test: dev',
                 containerName: 'kubectl',
                 namespace: 'kube-dev',
@@ -89,7 +94,8 @@ def call(Map config) {
                   [url: "http://${PROJECT_NAME}-dev-${HELM_CHART_NAME}.kube-dev/status"]
                 ]
               ],
-              dockerCleanup: [
+              [
+                method: 'dockerCleanup'
                 stageName: 'Docker Image Cleanup',
                 containerName: 'docker'
               ]
@@ -131,7 +137,8 @@ def call(Map config) {
                   node("deploy-${deployment}") {
 
                     DeployStages.stages(this, [
-                      helm: [
+                      [
+                        method: 'helm'
                         stageName: "Deploy: ${deployment}",
                         containerName: 'helm',
                         name: "${PROJECT_NAME}-${deployment}",
@@ -145,7 +152,8 @@ def call(Map config) {
                         chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
                         chartName: HELM_CHART_NAME
                       ],
-                      test: [
+                      [
+                        method: 'test'
                         stageName: "Test: ${deployment}",
                         containerName: 'kubectl',
                         namespace: "kube-${deployment}",
@@ -156,7 +164,8 @@ def call(Map config) {
                           [url: "http://${PROJECT_NAME}-${deployment}-${HELM_CHART_NAME}.kube-${deployment}/status"]
                         ]
                       ],
-                      dockerCleanup: [
+                      [
+                        method: 'dockerCleanup'
                         stageName: 'Docker Image Cleanup',
                         containerName: 'docker'
                       ]
@@ -179,5 +188,4 @@ def call(Map config) {
 		}
 
 	}
-  
 } 
