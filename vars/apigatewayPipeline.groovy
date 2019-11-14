@@ -13,18 +13,7 @@ def call(Map config) {
 
     pipeline {
         
-        agent {
-            kubernetes {
-                yaml podConfigBuilder.addAnnotations("""
-                        podTemplateClass: YamlPodConfigurationBuilder
-                        podTemplateType: deploy
-                    """).addLabels("""
-                        app: DynamicJenkinsAgent
-                        type: deploy
-                    """).removeContainers(['git', 'maven'])
-                    .removeVolumes(['mvnm2']).build()    
-            }
-        }
+        agent none
 
         stages {
 
@@ -32,6 +21,17 @@ def call(Map config) {
                 steps {
                     script {
                         PipelineStages.stages(this, [
+                            podTemplate: [
+                                label: "dynamic-jenkins-agent",
+                                yaml: podConfigBuilder.addAnnotations("""
+                                        podTemplateClass: YamlPodConfigurationBuilder
+                                        podTemplateType: deploy
+                                    """).addLabels("""
+                                        app: DynamicJenkinsAgent
+                                        type: deploy
+                                    """).removeContainers(['git', 'maven', 'kubectl'])
+                                    .removeVolumes(['mvnm2', 'dockersock']).build()
+                            ],
                             stages: [
                                 [
                                     utility: 'helm',
@@ -58,7 +58,30 @@ def call(Map config) {
                                     overrides: [
                                         "ingress.enabled=true"
                                     ]
-                                ],
+                                ]
+                            ]
+                        ])
+
+                    }
+                }
+            }
+
+            stage('Test Deployments') {
+                steps {
+                    script {
+                        PipelineStages.stages(this, [
+                            podTemplate: [
+                                label: "dynamic-jenkins-agent",
+                                yaml: podConfigBuilder.addAnnotations("""
+                                        podTemplateClass: YamlPodConfigurationBuilder
+                                        podTemplateType: deploy
+                                    """).addLabels("""
+                                        app: DynamicJenkinsAgent
+                                        type: deploy
+                                    """).removeContainers(['git', 'maven', 'helm'])
+                                    .removeVolumes(['mvnm2', 'dockersock']).build()
+                            ],
+                            stages: [
                                 [parallel: [
                                     [
                                         utility: 'test',
