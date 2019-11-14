@@ -9,7 +9,7 @@ class PipelineStages {
             if(stageConfig.containsKey('parallel')) {
                 def parallelStages = [:]
                 stageConfig.parallel.each { parallelStageConfig -> 
-                    parallelStages.put(stage.stageName, addStage(script, parallelStageConfig))
+                    parallelStages.put(parallelStageConfig.stageName, addStage(script, parallelStageConfig))
                 }
                 parallel(parallelStages)
             } else {
