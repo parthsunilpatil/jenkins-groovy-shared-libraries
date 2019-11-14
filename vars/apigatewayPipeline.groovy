@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 import com.example.demo.GlobalVars
 import com.example.demo.YamlPodConfigurationBuilder
-import com.example.demo.DeployStages
+import com.example.demo.PipelineStages
 
 def call(Map config) {
 	
@@ -31,56 +31,59 @@ def call(Map config) {
             stage('Deploy API Gateway & Dashboard') {
                 steps {
                     script {
-                        DeployStages.stages(this, [
-                            [
-                                utility: 'helm',
-                                stageName: 'Deploy API Gateway: Kong',
-                                containerName: 'helm',
-                                name: 'kong',
-                                namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
-                                chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
-                                chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
-                                chartName: 'kong'
-                            ],
-                            [
-                                utility: 'helm',
-                                stageName: 'Deploy Dashboard: Konga',
-                                containerName: 'helm',
-                                name: 'konga',
-                                namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
-                                chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
-                                chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
-                                chartName: 'konga'
-                            ],
-                            [
-                                utility: 'test',
-                                stageName: 'Test Kong',
-                                containerName: 'kubectl',
-                                namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
-                                waitFor: [
-                                    [labels: ['app=kong', 'release=kong', 'component=app']]
+                        PipelineStages.stages(this, [
+                            stages: [
+                                [
+                                    utility: 'helm',
+                                    stageName: 'Deploy API Gateway: Kong',
+                                    containerName: 'helm',
+                                    name: 'kong',
+                                    namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
+                                    chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
+                                    chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
+                                    chartName: 'kong'
                                 ],
-                                sh: [
-                                    cmd: """
-                                        kubectl get all -n ${PROJECT_K8S_DEPLOYMENT_NAMESPACE}
-                                    """
+                                [
+                                    utility: 'helm',
+                                    stageName: 'Deploy Dashboard: Konga',
+                                    containerName: 'helm',
+                                    name: 'konga',
+                                    namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
+                                    chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
+                                    chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
+                                    chartName: 'konga'
                                 ],
-                                curl: [
-                                    [
-                                        method: 'POST',
-                                        url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services",
-                                        data: [
-                                            'name=example-service',
-                                            'url=http://mockbin.org'
-                                        ]
-                                    ],
-                                    [
-                                        method: 'POST',
-                                        url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services/example-service/routes",
-                                        data: [
-                                            'paths[]=/example'
+                                [
+                                    utility: 'test',
+                                    stageName: 'Test Kong',
+                                    containerName: 'kubectl',
+                                    namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
+                                    waitFor: [[labels: ['app=kong', 'release=kong', 'component=app']]],
+                                    curl: [
+                                        [
+                                            method: 'POST',
+                                            url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services",
+                                            data: [
+                                                'name=example-service',
+                                                'url=http://mockbin.org'
+                                            ]
+                                        ],
+                                        [
+                                            method: 'POST',
+                                            url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services/example-service/routes",
+                                            data: [
+                                                'paths[]=/example'
+                                            ]
                                         ]
                                     ]
+                                ],
+                                [
+                                    stageName: 'Deployment Information',
+                                    containerName: 'kubectl',
+                                    label: 'Default Shell Stage - Deployment Information',
+                                    sh: """
+                                        kubectl -n ${PROJECT_K8S_DEPLOYMENT_NAMESPACE} get all
+                                    """
                                 ]
                             ]
                         ])
