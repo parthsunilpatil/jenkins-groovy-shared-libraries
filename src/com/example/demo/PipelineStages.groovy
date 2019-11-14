@@ -5,15 +5,15 @@ import com.example.demo.PipelineStagesFactory
 class PipelineStages {
 	
 	static def addStages(script, stagesConfig) {
-        if(stagesConfig.containsKey('parallel')) {
-            def parallelStages = [:]
-            stagesConfig.parallel.each { stage ->
-                parallelStages.put(stage.stageName, addStage(script, config))
-            }
-            parallel(parallelStages)
-        } else {
-            stagesConfig.each { config ->
-                addStage(script, config)
+        stagesConfig.each { stageConfig ->
+            if(stageConfig.containsKey('parallel')) {
+                def parallelStages = [:]
+                stageConfig.parallel.each { parallelStageConfig -> 
+                    parallelStages.put(stage.stageName, addStage(script, parallelStageConfig))
+                }
+                parallel(parallelStages)
+            } else {
+                addStage(script, stageConfig)
             }
         }
     }
