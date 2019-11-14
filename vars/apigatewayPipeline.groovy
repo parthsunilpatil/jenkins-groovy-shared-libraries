@@ -41,7 +41,10 @@ def call(Map config) {
                                     namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
                                     chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
                                     chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
-                                    chartName: 'kong'
+                                    chartName: 'kong',
+                                    overrides: [
+                                        "proxy.ingress.enabled=true"
+                                    ]
                                 ],
                                 [
                                     utility: 'helm',
@@ -51,12 +54,15 @@ def call(Map config) {
                                     namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
                                     chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
                                     chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
-                                    chartName: 'konga'
+                                    chartName: 'konga',
+                                    overrides: [
+                                        "ingress.enabled=true"
+                                    ]
                                 ],
                                 [parallel: [
                                     [
                                         utility: 'test',
-                                        stageName: 'Test Kong',
+                                        stageName: 'Add Example Service & Route: /posts',
                                         containerName: 'kubectl',
                                         namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
                                         waitFor: [[labels: ['app=kong', 'release=kong', 'component=app']]],
@@ -65,15 +71,41 @@ def call(Map config) {
                                                 method: 'POST',
                                                 url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services",
                                                 data: [
-                                                    'name=example-service',
-                                                    'url=http://mockbin.org'
+                                                    'name=posts-example-service',
+                                                    'url=https://jsonplaceholder.typicode.com/posts'
                                                 ]
                                             ],
                                             [
                                                 method: 'POST',
-                                                url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services/example-service/routes",
+                                                url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services/posts-example-service/routes",
                                                 data: [
-                                                    'paths[]=/example'
+                                                    'name=posts-example-service-route',
+                                                    'paths[]=/posts'
+                                                ]
+                                            ]
+                                        ]
+                                    ],
+                                    [
+                                        utility: 'test',
+                                        stageName: 'Add Example Service & Route: /users',
+                                        containerName: 'kubectl',
+                                        namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
+                                        waitFor: [[labels: ['app=kong', 'release=kong', 'component=app']]],
+                                        curl: [
+                                            [
+                                                method: 'POST',
+                                                url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services",
+                                                data: [
+                                                    'name=users-example-service',
+                                                    'url=https://jsonplaceholder.typicode.com/users'
+                                                ]
+                                            ],
+                                            [
+                                                method: 'POST',
+                                                url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services/users-example-service/routes",
+                                                data: [
+                                                    'name=users-example-service-route',
+                                                    'paths[]=/users'
                                                 ]
                                             ]
                                         ]
