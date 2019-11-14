@@ -9,7 +9,9 @@ class PipelineStages {
             if(stageConfig.containsKey('parallel')) {
                 def parallelStages = [:]
                 stageConfig.parallel.each { parallelStageConfig -> 
-                    parallelStages.put(parallelStageConfig.stageName, addStage(script, parallelStageConfig))
+                    parallelStages.put(parallelStageConfig.stageName, {
+                        addStage(script, parallelStageConfig)
+                    })
                 }
                 script.parallel(parallelStages)
             } else {
@@ -20,10 +22,8 @@ class PipelineStages {
 
 
     static def addStage(script, config) {
-        return {
-            script.stage(config.stageName) {
-                PipelineStagesFactory.getStage(script, config)
-            }
+        script.stage(config.stageName) {
+            PipelineStagesFactory.getStage(script, config)
         }
     }
 
