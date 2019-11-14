@@ -5,7 +5,22 @@ import com.example.demo.PipelineStagesFactory
 class PipelineStages {
 	
 	static def addStages(script, stagesConfig) {
-        stagesConfig.each { config ->
+        if(stagesConfig.containsKey('parallel')) {
+            def parallelStages = [:]
+            stagesConfig.parallel.each { stage ->
+                parallelStages.put(stage.stageName, addStage(script, config))
+            }
+            parallel(parallelStages)
+        } else {
+            stagesConfig.each { config ->
+                addStage(script, config)
+            }
+        }
+    }
+
+
+    static def addStage(script, config) {
+        return {
             script.stage(config.stageName) {
                 PipelineStagesFactory.getStage(script, config)
             }

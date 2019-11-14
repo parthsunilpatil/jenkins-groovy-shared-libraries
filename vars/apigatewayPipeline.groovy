@@ -53,37 +53,37 @@ def call(Map config) {
                                     chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
                                     chartName: 'konga'
                                 ],
-                                [
-                                    utility: 'test',
-                                    stageName: 'Test Kong',
-                                    containerName: 'kubectl',
-                                    namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
-                                    waitFor: [[labels: ['app=kong', 'release=kong', 'component=app']]],
-                                    curl: [
-                                        [
-                                            method: 'POST',
-                                            url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services",
-                                            data: [
-                                                'name=example-service',
-                                                'url=http://mockbin.org'
-                                            ]
-                                        ],
-                                        [
-                                            method: 'POST',
-                                            url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services/example-service/routes",
-                                            data: [
-                                                'paths[]=/example'
+                                parallel: [
+                                    [
+                                        utility: 'test',
+                                        stageName: 'Test Kong',
+                                        containerName: 'kubectl',
+                                        namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
+                                        waitFor: [[labels: ['app=kong', 'release=kong', 'component=app']]],
+                                        curl: [
+                                            [
+                                                method: 'POST',
+                                                url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services",
+                                                data: [
+                                                    'name=example-service',
+                                                    'url=http://mockbin.org'
+                                                ]
+                                            ],
+                                            [
+                                                method: 'POST',
+                                                url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services/example-service/routes",
+                                                data: [
+                                                    'paths[]=/example'
+                                                ]
                                             ]
                                         ]
+                                    ],
+                                    [
+                                        stageName: 'Deployment Information',
+                                        containerName: 'kubectl',
+                                        label: 'Default Shell Stage - Deployment Information',
+                                        sh: "kubectl -n ${PROJECT_K8S_DEPLOYMENT_NAMESPACE} get all"
                                     ]
-                                ],
-                                [
-                                    stageName: 'Deployment Information',
-                                    containerName: 'kubectl',
-                                    label: 'Default Shell Stage - Deployment Information',
-                                    sh: """
-                                        kubectl -n ${PROJECT_K8S_DEPLOYMENT_NAMESPACE} get all
-                                    """
                                 ]
                             ]
                         ])
