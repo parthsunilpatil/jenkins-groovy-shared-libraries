@@ -11,7 +11,7 @@ class PipelineStages {
                 stageConfig.parallel.each { parallelStageConfig -> 
                     parallelStages.put(parallelStageConfig.stageName, addStage(script, parallelStageConfig))
                 }
-                parallel(parallelStages)
+                script.parallel(parallelStages)
             } else {
                 addStage(script, stageConfig)
             }
