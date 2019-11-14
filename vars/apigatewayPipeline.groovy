@@ -53,7 +53,7 @@ def call(Map config) {
                                     chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
                                     chartName: 'konga'
                                 ],
-                                parallel: [
+                                [parallel: [
                                     [
                                         utility: 'test',
                                         stageName: 'Test Kong',
@@ -84,7 +84,7 @@ def call(Map config) {
                                         label: 'Default Shell Stage - Deployment Information',
                                         sh: "kubectl -n ${PROJECT_K8S_DEPLOYMENT_NAMESPACE} get all"
                                     ]
-                                ]
+                                ]]
                             ]
                         ])
                     }
