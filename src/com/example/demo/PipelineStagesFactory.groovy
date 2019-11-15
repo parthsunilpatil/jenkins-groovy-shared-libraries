@@ -22,11 +22,14 @@ class PipelineStagesFactory {
 			case "helm":
 				DeployStages.helm(script, config)
 			break
-			case "test":
-				DeployStages.test(script, config)
+			case "curl":
+				DeployStages.curl(script, config)
 			break
 			case "dockerCleanup":
 				DeployStages.dockerCleanup(script, config)
+			break
+			case "waitFor":
+				DeployStages.waitFor(script, config)
 			break
 			default:
 				defaultStage(script, config)

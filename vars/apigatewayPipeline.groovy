@@ -17,7 +17,7 @@ def call(Map config) {
 
         stages {
 
-            stage('Deploy API Gateway & Dashboard') {
+            stage('Stages: Deploy API Gateway & Dashboard') {
                 steps {
                     script {
                         PipelineStages.stages(this, [
@@ -27,7 +27,7 @@ def call(Map config) {
                                         podTemplateClass: YamlPodConfigurationBuilder
                                         podTemplateType: deploy
                                     """).addLabels("""
-                                        app: DynamicJenkinsAgent
+                                        app: DynamicJenkinsAgent-helm
                                         type: deploy
                                     """).removeContainers(['git', 'maven', 'kubectl'])
                                     .removeVolumes(['mvnm2', 'dockersock']).build()
@@ -66,7 +66,7 @@ def call(Map config) {
                 }
             }
 
-            stage('Test Deployments') {
+            stage('Stages: Test Deployments') {
                 steps {
                     script {
                         PipelineStages.stages(this, [
@@ -76,7 +76,7 @@ def call(Map config) {
                                         podTemplateClass: YamlPodConfigurationBuilder
                                         podTemplateType: deploy
                                     """).addLabels("""
-                                        app: DynamicJenkinsAgent
+                                        app: DynamicJenkinsAgent-kubectl
                                         type: deploy
                                     """).removeContainers(['git', 'maven', 'helm'])
                                     .removeVolumes(['mvnm2', 'dockersock']).build()
@@ -84,18 +84,40 @@ def call(Map config) {
                             stages: [
                                 [parallel: [
                                     [
-                                        utility: 'test',
+                                        utility: 'waitFor',
+                                        stageName: 'Wait For Pod Ready: postgres',
+                                        containerName: 'kubectl',
+                                        namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
+                                        waitFor: [labels: ["app.kubernetes.io/instance=kong", "app.kubernetes.io/name=postgres"]]
+                                    ],
+                                    [
+                                        utility: 'waitFor',
+                                        stageName: 'Wait For Pod Ready: kong',
+                                        containerName: 'kubectl',
+                                        namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
+                                        waitFor: [labels: ["app=kong", "component=app", "release=kong"]]
+                                    ],
+                                    [
+                                        utility: 'waitFor',
+                                        stageName: 'Wait For Pod Ready: konga',
+                                        containerName: 'kubectl',
+                                        namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
+                                        waitFor: [labels: ["app.kubernetes.io/instance=konga", "app.kubernetes.io/name=konga"]]
+                                    ]
+                                ]],
+                                [parallel: [
+                                    [
+                                        utility: 'curl',
                                         stageName: 'Add Example Service & Route: /posts',
                                         containerName: 'kubectl',
                                         namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
-                                        waitFor: [[labels: ['app=kong', 'release=kong', 'component=app']]],
                                         curl: [
                                             [
                                                 method: 'POST',
                                                 url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services",
                                                 data: [
                                                     'name=posts-example-service',
-                                                    'url=https://jsonplaceholder.typicode.com/posts'
+                                                    'url=http://jsonplaceholder.typicode.com/posts'
                                                 ]
                                             ],
                                             [
@@ -109,18 +131,17 @@ def call(Map config) {
                                         ]
                                     ],
                                     [
-                                        utility: 'test',
+                                        utility: 'curl',
                                         stageName: 'Add Example Service & Route: /users',
                                         containerName: 'kubectl',
                                         namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
-                                        waitFor: [[labels: ['app=kong', 'release=kong', 'component=app']]],
                                         curl: [
                                             [
                                                 method: 'POST',
                                                 url: "http://kong-kong-admin.${PROJECT_K8S_DEPLOYMENT_NAMESPACE}:8001/services",
                                                 data: [
                                                     'name=users-example-service',
-                                                    'url=https://jsonplaceholder.typicode.com/users'
+                                                    'url=http://jsonplaceholder.typicode.com/users'
                                                 ]
                                             ],
                                             [
@@ -132,12 +153,6 @@ def call(Map config) {
                                                 ]
                                             ]
                                         ]
-                                    ],
-                                    [
-                                        stageName: 'Deployment Information',
-                                        containerName: 'kubectl',
-                                        label: 'Default Shell Stage - Deployment Information',
-                                        sh: "kubectl -n ${PROJECT_K8S_DEPLOYMENT_NAMESPACE} get all"
                                     ]
                                 ]]
                             ]

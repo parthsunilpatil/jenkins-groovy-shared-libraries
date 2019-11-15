@@ -83,7 +83,7 @@ def call(Map config) {
                 chartName: HELM_CHART_NAME
               ],
               [
-                utility: 'test',
+                utility: 'curl',
                 stageName: 'Test: dev',
                 containerName: 'kubectl',
                 namespace: 'kube-dev',
@@ -153,7 +153,7 @@ def call(Map config) {
                         chartName: HELM_CHART_NAME
                       ],
                       [
-                        utility: 'test',
+                        utility: 'curl',
                         stageName: "Test: ${deployment}",
                         containerName: 'kubectl',
                         namespace: "kube-${deployment}",

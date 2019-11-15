@@ -15,13 +15,16 @@ class DeployStages {
         switch(config.utility) {
             case "helm":
                 helm(script, config)
-                break
-            case "test":
-                test(script, config)
-                break
+            break
+            case "curl":
+                curl(script, config)
+            break
             case "dockerCleanup":
                 dockerCleanup(script, config)
-                break
+            break
+            case "waitFor":
+                waitFor(script, config)
+            break
             default:
                 break
         }
@@ -51,8 +54,8 @@ class DeployStages {
                 """, label: "Checkout Source for Values Files - branch=${config.values.gitBranch}, repo=${config.values.gitRepository}"
                 helmCmd += " -f ${config.values.file}"
             } else if(config.containsKey("overrides")) {
-                config.overrides.each {
-                    helmCmd += " --set ${it}"
+                config.overrides.each { override ->
+                    helmCmd += " --set ${override}"
                 }
             }
 
@@ -62,42 +65,37 @@ class DeployStages {
         }
     }
 
-    static def test(script, config) {
+    static def waitFor(script, config) {
         script.container(config.containerName) {
-            if(config.containsKey('waitFor')) {
-                config.waitFor.each {
-                    def podSh = "kubectl -n ${config.namespace} get pod"
-                    if(it.containsKey('labels')) {
-                        it.labels.each {
-                            podSh += " -l \'${it}\'"
-                        }
-                    }
-                    podSh += " -o \'jsonpath={.items[0].metadata.name}\'"
-                    def pod = script.sh returnStdout: true, script: podSh, label: "Get Pod Name - labels=${it.labels}"
-                    script.sh script: "kubectl -n ${config.namespace} wait --timeout=3600s --for=condition=Ready pod/${pod}", label: "Wait for pod/${pod} to be ready"
+            config.waitFor.each { pod ->
+                def podSh = "kubectl -n ${config.namespace} get pod"
+                pod.labels.each { label ->
+                    podSh += " -l \'${label}\'"
                 }
+                podSh += " -o \'jsonpath={.items[0].metadata.name}\'"
+                def podName = script.sh returnStdout: true, script: podSh, label: "Get Pod Name - labels=${pod.labels}"
+                script.sh script: "kubectl -n ${config.namespace} wait --timeout=3600s --for=condition=Ready pod/${podName}", label: "Wait for pod/${podName} to be ready"
             }
+        }
+    }
 
-            config.curl.each {
+    static def curl(script, config) {
+        script.container(config.containerName) {
+            config.curl.each { cmd ->
                 def curl = "curl -i"
-                if(it.containsKey('method')) {
-                    curl += " -X ${it.method}"
+                if(cmd.containsKey('method')) {
+                    curl += " -X ${cmd.method}"
                 }
-                if(it.containsKey('url')) {
-                    curl += " --url ${it.url}"
+                if(cmd.containsKey('url')) {
+                    curl += " --url ${cmd.url}"
                 }
-                if(it.containsKey('data')) {
-                    it.data.each {
-                        curl += " --data \'${it}\'"
+                if(cmd.containsKey('data')) {
+                    cmd.data.each {
+                        curl += " --data \'${cmd}\'"
                     }
                 }
-                script.sh script: curl, label: "Run Curl Command - url=${it.url}"
+                script.sh script: curl, label: "Run Curl Command - url=${cmd.url}"
             }
-
-            config.sh.each { shell ->
-                script.sh script: shell.cmd, label: "Custom Shell Script"
-            }
-
 
         }
     }
