@@ -29,7 +29,7 @@ def call(Map config) {
                                     """).addLabels("""
                                         app: DynamicJenkinsAgent-helm
                                         type: deploy
-                                    """).removeContainers(['git', 'maven', 'kubectl'])
+                                    """).removeContainers(['git', 'maven', 'kubectl', 'docker'])
                                     .removeVolumes(['mvnm2', 'dockersock']).build()
                             ],
                             stages: [
@@ -78,7 +78,7 @@ def call(Map config) {
                                     """).addLabels("""
                                         app: DynamicJenkinsAgent-kubectl
                                         type: deploy
-                                    """).removeContainers(['git', 'maven', 'helm'])
+                                    """).removeContainers(['git', 'maven', 'helm', 'docker'])
                                     .removeVolumes(['mvnm2', 'dockersock']).build()
                             ],
                             stages: [
