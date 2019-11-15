@@ -41,7 +41,8 @@ def call(Map config) {
                                     chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
                                     chartName: 'kong',
                                     overrides: [
-                                        "proxy.ingress.enabled=true"
+                                        "proxy.ingress.enabled=true",
+                                        "image.tag=1.3.0"
                                     ]
                                 ],
                                 [
