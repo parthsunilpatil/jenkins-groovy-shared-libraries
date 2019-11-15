@@ -9,8 +9,6 @@ def call(Map config) {
     def HELM_CHART_REPOSITORY_URL="${config.HELM_CHART_REPOSITORY_URL}"
     def PROJECT_K8S_DEPLOYMENT_NAMESPACE="${config.PROJECT_K8S_DEPLOYMENT_NAMESPACE}"
 
-    def podConfigBuilder = new YamlPodConfigurationBuilder()
-
     pipeline {
         
         agent none
@@ -23,7 +21,7 @@ def call(Map config) {
                         PipelineStages.stages(this, [
                             podTemplate: [
                                 label: "dynamic-jenkins-agent",
-                                yaml: podConfigBuilder.addAnnotations("""
+                                yaml: new YamlPodConfigurationBuilder().addAnnotations("""
                                         podTemplateClass: YamlPodConfigurationBuilder
                                         podTemplateType: deploy
                                     """).addLabels("""
@@ -72,7 +70,7 @@ def call(Map config) {
                         PipelineStages.stages(this, [
                             podTemplate: [
                                 label: "dynamic-jenkins-agent",
-                                yaml: podConfigBuilder.addAnnotations("""
+                                yaml: new YamlPodConfigurationBuilder().addAnnotations("""
                                         podTemplateClass: YamlPodConfigurationBuilder
                                         podTemplateType: deploy
                                     """).addLabels("""
