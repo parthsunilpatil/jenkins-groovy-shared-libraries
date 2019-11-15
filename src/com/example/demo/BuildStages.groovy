@@ -44,28 +44,4 @@ class BuildStages {
         }
     }
 
-    static def factory(script, config) {
-        switch(config.utility) {
-            case "git":
-                git(script, config)
-                break
-            case "maven":
-                mvn(script, config)
-                break
-            case "docker":
-                dockerBuildDeploy(script, config)
-                break
-            default:
-                break
-        }
-    }
-
-    static def stages(script, stagesConfig) {
-        stagesConfig.each { config -> 
-            script.stage(config.stageName) {
-                factory(script, config)
-            }
-        }
-    }
-
 }

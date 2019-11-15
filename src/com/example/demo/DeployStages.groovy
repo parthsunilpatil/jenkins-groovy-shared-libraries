@@ -3,33 +3,6 @@ package com.example.demo
 
 class DeployStages {
 
-    static def stages(script, stagesConfig) {
-        stagesConfig.each { config -> 
-            script.stage(config.stageName) {
-                factory(script, config)
-            }
-        }
-    }
-
-    static def factory(script, config) {
-        switch(config.utility) {
-            case "helm":
-                helm(script, config)
-            break
-            case "curl":
-                curl(script, config)
-            break
-            case "dockerCleanup":
-                dockerCleanup(script, config)
-            break
-            case "waitFor":
-                waitFor(script, config)
-            break
-            default:
-                break
-        }
-    }
-
     static def helm(script, config) {
         script.container(config.containerName) {
             script.sh script: """
