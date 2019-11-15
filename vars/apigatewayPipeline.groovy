@@ -88,21 +88,21 @@ def call(Map config) {
                                         stageName: 'Wait For Pod Ready: postgres',
                                         containerName: 'kubectl',
                                         namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
-                                        waitFor: [labels: ["app.kubernetes.io/instance=kong", "app.kubernetes.io/name=postgres"]]
+                                        labels: ["app.kubernetes.io/instance=kong", "app.kubernetes.io/name=postgres"]
                                     ],
                                     [
                                         utility: 'waitFor',
                                         stageName: 'Wait For Pod Ready: kong',
                                         containerName: 'kubectl',
                                         namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
-                                        waitFor: [labels: ["app=kong", "component=app", "release=kong"]]
+                                        labels: ["app=kong", "component=app", "release=kong"]
                                     ],
                                     [
                                         utility: 'waitFor',
                                         stageName: 'Wait For Pod Ready: konga',
                                         containerName: 'kubectl',
                                         namespace: PROJECT_K8S_DEPLOYMENT_NAMESPACE,
-                                        waitFor: [labels: ["app.kubernetes.io/instance=konga", "app.kubernetes.io/name=konga"]]
+                                        labels: ["app.kubernetes.io/instance=konga", "app.kubernetes.io/name=konga"]
                                     ]
                                 ]],
                                 [parallel: [

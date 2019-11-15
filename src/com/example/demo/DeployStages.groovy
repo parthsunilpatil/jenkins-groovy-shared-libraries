@@ -67,15 +67,13 @@ class DeployStages {
 
     static def waitFor(script, config) {
         script.container(config.containerName) {
-            config.waitFor.each { pod ->
-                def podSh = "kubectl -n ${config.namespace} get pod"
-                pod.labels.each { label ->
-                    podSh += " -l \'${label}\'"
-                }
-                podSh += " -o \'jsonpath={.items[0].metadata.name}\'"
-                def podName = script.sh returnStdout: true, script: podSh, label: "Get Pod Name - labels=${pod.labels}"
-                script.sh script: "kubectl -n ${config.namespace} wait --timeout=3600s --for=condition=Ready pod/${podName}", label: "Wait for pod/${podName} to be ready"
+            def podSh = "kubectl -n ${config.namespace} get pod"
+            config.labels.each { label ->
+                podSh += " -l \'${label}\'"
             }
+            podSh += " -o \'jsonpath={.items[0].metadata.name}\'"
+            def podName = script.sh returnStdout: true, script: podSh, label: "Get Pod Name - labels=${config.labels}"
+            script.sh script: "kubectl -n ${config.namespace} wait --timeout=3600s --for=condition=Ready pod/${podName}", label: "Wait for pod/${podName} to be ready"
         }
     }
 
