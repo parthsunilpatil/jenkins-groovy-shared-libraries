@@ -52,7 +52,7 @@ def call(Map config) {
                                     ],
                                     [
                                         utility: 'waitFor',
-                                        stageName: 'Wait For Pod Ready: nginx-ingress-controller',
+                                        stageName: 'Wait For Pod Ready: nginx-ingress-default-backend',
                                         containerName: 'kubectl',
                                         namespace: 'kube-ingress',
                                         labels: ["app=nginx-ingress", "component=default-backend", "release=nginx-ingress"]
