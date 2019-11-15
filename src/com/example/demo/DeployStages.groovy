@@ -88,8 +88,8 @@ class DeployStages {
                     curl += " --url ${cmd.url}"
                 }
                 if(cmd.containsKey('data')) {
-                    cmd.data.each {
-                        curl += " --data \'${cmd}\'"
+                    cmd.data.each { data -> 
+                        curl += " --data \'${data}\'"
                     }
                 }
                 script.sh script: curl, label: "Run Curl Command - url=${cmd.url}"
