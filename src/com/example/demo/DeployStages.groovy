@@ -86,9 +86,9 @@ class DeployStages {
 
     static def promotion(script, config) {
         script.timeout(time: 1, unit: 'DAYS') {
-            input message: "Promote to ${config.deployment}?", 
+            script.input message: "Promote to ${config.deployment}?", 
             ok: 'Promote', 
-            parameters: [string([defaultValue: '', description: 'Approver Comments', name: 'COMMENT', trim: false])], 
+            parameters: [script.string(defaultValue: '', description: 'Approver Comments', name: 'COMMENT', trim: false)], 
             submitter: "${config.submitters}"
         }
     }
