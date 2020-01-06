@@ -37,7 +37,7 @@ class GlobalVars {
         - cat
         tty: true
       - name: helm
-        image: parthpatil3110/k8s-helm:2.16.0-rc.2
+        image: parthpatil3110/k8s-helm:2.16.1
         command:
         - cat
         tty: true
