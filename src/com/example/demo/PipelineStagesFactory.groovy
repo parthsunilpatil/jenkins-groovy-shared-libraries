@@ -31,6 +31,9 @@ class PipelineStagesFactory {
 			case "waitFor":
 				DeployStages.waitFor(script, config)
 			break
+			case "promotion":
+				DeployStages.promotion(script, config)
+			break
 			default:
 				defaultStage(script, config)
 			break

@@ -64,7 +64,7 @@ class YamlPodConfigurationBuilder {
             containers.each {
                 initMap(podTemplate, "spec")
                 initMap(podTemplate.spec, "containers")
-                podTemplate.spec.containers.put(it.key, it.value)
+                podTemplate.spec.containers.put(it)
             }
         }
         return this
@@ -87,7 +87,7 @@ class YamlPodConfigurationBuilder {
             volumes.each {
                initMap(podTemplate, "spec")
                initMap(podTemplate.spec, "volumes")
-               podTemplate.spec.volumes.put(it.key, it.value) 
+               podTemplate.spec.volumes.put(it) 
             }
         }
         return this

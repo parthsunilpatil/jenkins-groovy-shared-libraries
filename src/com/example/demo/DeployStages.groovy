@@ -12,8 +12,10 @@ class DeployStages {
             
             if(config.chartsRepositoryName != "stable") {
                 script.sh script: """
-                    helm repo add ${config.chartsRepositoryName} ${config.chartsRepositoryUrl}
-                    helm repo list
+                    if ! \$(helm repo list | grep ${config.chartsRepositoryName}); then
+                        helm repo add ${config.chartsRepositoryName} ${config.chartsRepositoryUrl}
+                        helm repo list | grep ${config.chartsRepositoryName}
+                    fi
                 """, label: "Add Helm Repository - name=${config.chartsRepositoryName}, repo=${config.chartsRepositoryUrl}"
             }
 
@@ -79,6 +81,15 @@ class DeployStages {
                 echo "Clean Up of dangling not in use docker images completed"
               fi
             """, label: "Docker Clean-up"
+        }
+    }
+
+    static def promotion(script, config) {
+        script.timeout(time: 1, unit: 'DAYS') {
+            input message: "Promote to ${config.deployment}?", 
+            ok: 'Promote', 
+            parameters: [string(defaultValue: '', description: 'Approver Comments', name: 'COMMENT', trim: false)], 
+            submitter: "${config.submitters}"
         }
     }
 
