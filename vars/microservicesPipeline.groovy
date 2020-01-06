@@ -150,7 +150,7 @@ def call(Map config) {
                       utility: 'waitFor',
                       stageName: "Wait For Pod Ready: ${PROJECT_NAME}",
                       containerName: 'kubectl',
-                      namespace: 'kube-dev',
+                      namespace: "kube-${deployment,name}",
                       labels: ["app.kubernetes.io/instance=${PROJECT_NAME}-${deployment.name}", "app.kubernetes.io/name=${HELM_CHART_NAME}"]
                     ]
                   ]],
