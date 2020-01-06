@@ -3,6 +3,16 @@ package com.example.demo
 
 class DeployStages {
 
+    static def angularCli(script, config) {
+        script.container(config.containerName) {
+            script.sh """
+                echo "npm install & ng build : config = ${config}"
+                npm install
+                ng build --prod --output-hashing none --single-bundle true
+            """, label: "Install Angular Frontend"
+        }
+    }
+
     static def helm(script, config) {
         script.container(config.containerName) {
             script.sh script: """

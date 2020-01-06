@@ -31,6 +31,11 @@ class GlobalVars {
         volumeMounts:
         - name: mvnm2
           mountPath: /root/.m2/repository
+      - name: angular
+        image: trion/ng-cli
+        command:
+        - cat
+        tty: true
       - name: git
         image: alpine/git:1.0.7
         command:

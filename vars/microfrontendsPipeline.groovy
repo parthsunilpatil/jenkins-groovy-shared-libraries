@@ -19,12 +19,12 @@ def call(Map config) {
   def HELM_CHART_REPOSITORY_NAME="${config.HELM_CHART_REPOSITORY_NAME}"
   def HELM_CHART_REPOSITORY_URL="${config.HELM_CHART_REPOSITORY_URL}"
 
-	pipeline {
-		agent none
+  pipeline {
+    agent none
 
-		stages {
-			
-			stage('Stages: Build & Deploy - dev') {
+    stages {
+      
+      stage('Stages: Build & Deploy - dev') {
         steps {
           script {
             PipelineStages.stages(this, [
@@ -35,7 +35,8 @@ def call(Map config) {
                   podTemplateType: build
                 """).addLabels("""
                   app: DynamicJenkinsAgent
-                """).removeContainers(['angular']).build()
+                """).removeContainers(['maven'])
+                .removeVolumes(['mvnm2']).build()
               ],
               stages: [
                 [
@@ -46,9 +47,9 @@ def call(Map config) {
                   gitBranch: GIT_BRANCH
                 ],
                 [
-                  utility: 'maven',
-                  stageName: 'Maven Build',
-                  containerName: 'maven'
+                  utility: 'angularCli',
+                  stageName: 'Angular Build',
+                  containerName: 'angular'
                 ],
                 [
                   utility: 'docker',
@@ -87,21 +88,14 @@ def call(Map config) {
                     namespace: 'kube-dev',
                     labels: ["app.kubernetes.io/instance=${PROJECT_NAME}-dev", "app.kubernetes.io/name=${HELM_CHART_NAME}"]
                   ]
-                ]],
-                [
-                  utility: 'curl',
-                  stageName: 'Test: dev',
-                  containerName: 'kubectl',
-                  namespace: 'kube-dev',
-                  curl: [[url: "http://${PROJECT_NAME}-dev-${HELM_CHART_NAME}.kube-dev/status"]]
-                ]
+                ]]
               ]
             ])
           }
         }
       }
 
-			stage('Stages: Deploy') {
+      stage('Stages: Deploy') {
         steps {
           script {
             config.deployments.each { deployment ->
@@ -153,22 +147,15 @@ def call(Map config) {
                       namespace: 'kube-dev',
                       labels: ["app.kubernetes.io/instance=${PROJECT_NAME}-${deployment.name}", "app.kubernetes.io/name=${HELM_CHART_NAME}"]
                     ]
-                  ]],
-                  [
-                    utility: 'curl',
-                    stageName: "Test: ${deployment.name}",
-                    containerName: 'kubectl',
-                    namespace: "kube-${deployment.name}",
-                    curl: [[url: "http://${PROJECT_NAME}-${deployment.name}-${HELM_CHART_NAME}.kube-${deployment.name}/status"]]
-                  ]
+                  ]]
                 ]
               ])
             }
           }
         }
-			}
+      }
 
-		}
+    }
 
-	}
+  }
 } 
