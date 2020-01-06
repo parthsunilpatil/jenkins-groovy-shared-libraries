@@ -142,7 +142,7 @@ def call(Map config) {
                   ],
                   [parallel: [
                     [
-                      utility: 'dockerCleanup'
+                      utility: 'dockerCleanup',
                       stageName: 'Docker Image Cleanup',
                       containerName: 'docker'
                     ],
