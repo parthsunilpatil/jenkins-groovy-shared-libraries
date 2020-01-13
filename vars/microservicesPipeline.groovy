@@ -43,12 +43,20 @@ def call(Map config) {
                   stageName: 'Git Checkout',
                   containerName: 'git',
                   gitRepository: GIT_REPOSITORY,
-                  gitBranch: GIT_BRANCH
+                  gitBranch: GIT_BRANCH,
+                  email: [
+                    status: currentBuild.result,
+                    recipients: 'parth.patil@imaginea.com'
+                  ]
                 ],
                 [
                   utility: 'maven',
                   stageName: 'Maven Build',
-                  containerName: 'maven'
+                  containerName: 'maven',
+                  email: [
+                    status: currentBuild.result,
+                    recipients: 'parth.patil@imaginea.com'
+                  ]
                 ],
                 [
                   utility: 'docker',
@@ -57,7 +65,11 @@ def call(Map config) {
                   buildOnly: true,
                   registry: DOCKER_REGISTRY,
                   repository: DOCKER_REPOSITORY,
-                  tag: DOCKER_TAG
+                  tag: DOCKER_TAG,
+                  email: [
+                    status: currentBuild.result,
+                    recipients: 'parth.patil@imaginea.com'
+                  ]
                 ],
                 [
                   utility: 'helm',
@@ -72,7 +84,11 @@ def call(Map config) {
                   ],
                   chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
                   chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
-                  chartName: HELM_CHART_NAME
+                  chartName: HELM_CHART_NAME,
+                  email: [
+                    status: currentBuild.result,
+                    recipients: 'parth.patil@imaginea.com'
+                  ]
                 ],
                 [parallel: [
                   [
@@ -93,7 +109,11 @@ def call(Map config) {
                   stageName: 'Test: dev',
                   containerName: 'kubectl',
                   namespace: 'kube-dev',
-                  curl: [[url: "http://${PROJECT_NAME}-dev-${HELM_CHART_NAME}.kube-dev/status"]]
+                  curl: [[url: "http://${PROJECT_NAME}-dev-${HELM_CHART_NAME}.kube-dev/status"]],
+                  email: [
+                    status: currentBuild.result,
+                    recipients: 'parth.patil@imaginea.com'
+                  ]
                 ]
               ]
             ])
@@ -138,7 +158,11 @@ def call(Map config) {
                     ],
                     chartsRepositoryName: HELM_CHART_REPOSITORY_NAME,
                     chartsRepositoryUrl: HELM_CHART_REPOSITORY_URL,
-                    chartName: HELM_CHART_NAME
+                    chartName: HELM_CHART_NAME,
+                    email: [
+                      status: currentBuild.result,
+                      recipients: 'parth.patil@imaginea.com'
+                    ]
                   ],
                   [parallel: [
                     [
@@ -159,7 +183,11 @@ def call(Map config) {
                     stageName: "Test: ${deployment.name}",
                     containerName: 'kubectl',
                     namespace: "kube-${deployment.name}",
-                    curl: [[url: "http://${PROJECT_NAME}-${deployment.name}-${HELM_CHART_NAME}.kube-${deployment.name}/status"]]
+                    curl: [[url: "http://${PROJECT_NAME}-${deployment.name}-${HELM_CHART_NAME}.kube-${deployment.name}/status"]],
+                    email: [
+                      status: currentBuild.result,
+                      recipients: 'parth.patil@imaginea.com'
+                    ]
                   ]
                 ]
               ])

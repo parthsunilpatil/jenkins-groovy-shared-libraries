@@ -22,6 +22,21 @@ class PipelineStages {
 
 
     static def addStage(script, config) {
+        if(config.containsKey('email')) {
+            try {
+               script.stage(config.stageName) {
+                    PipelineStagesFactory.getStage(script, config)
+                } 
+            } catch(err) {
+                script.echo err.getMessage()
+            } finally {
+                Utilities.emailNotification(script, [
+                    status: config.email.status,
+                    stage: config.stageName,
+                    recipients: config.email.recipients
+                ])
+            }
+        }
         script.stage(config.stageName) {
             PipelineStagesFactory.getStage(script, config)
         }
