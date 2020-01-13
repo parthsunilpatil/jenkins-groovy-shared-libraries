@@ -19,6 +19,13 @@ class YamlPodConfigurationBuilder {
         }
     }
 
+    @NonCPS
+    def initArray(Map parent, String key) {
+        if(!parent.containsKey(key)) {
+            parent.put(key, [])
+        }
+    }
+
 	@NonCPS
 	def addAnnotations(String yamlStr = "") {
 		if(yamlStr != "") {
@@ -63,8 +70,8 @@ class YamlPodConfigurationBuilder {
             def containers = new Yaml().load(yamlStr)
             containers.each {
                 initMap(podTemplate, "spec")
-                initMap(podTemplate.spec, "containers")
-                podTemplate.spec.containers.put(it)
+                initArray(podTemplate.spec, "containers")
+                podTemplate.spec.containers.add(it)
             }
         }
         return this
@@ -86,8 +93,8 @@ class YamlPodConfigurationBuilder {
             def volumes = new Yaml().load(yamlStr)
             volumes.each {
                initMap(podTemplate, "spec")
-               initMap(podTemplate.spec, "volumes")
-               podTemplate.spec.volumes.put(it) 
+               initArray(podTemplate.spec, "volumes")
+               podTemplate.spec.volumes.add(it) 
             }
         }
         return this
