@@ -36,9 +36,10 @@ class PipelineStages {
                     recipients: config.email.recipients
                 ])
             }
-        }
-        script.stage(config.stageName) {
-            PipelineStagesFactory.getStage(script, config)
+        } else {
+            script.stage(config.stageName) {
+                PipelineStagesFactory.getStage(script, config)
+            }
         }
     }
 
