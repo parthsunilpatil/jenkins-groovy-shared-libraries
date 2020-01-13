@@ -3,13 +3,22 @@ package com.example.demo
 
 class DeployStages {
 
-    static def angularCli(script, config) {
+    static def ansiblePlaybook(script, config) {
         script.container(config.containerName) {
-            script.sh script: """
-                echo "npm install & ng build : config = ${config}"
-                npm install
-                ng build --prod --output-hashing none --single-bundle true
-            """, label: "Install Angular Frontend"
+            if(config.containsKey("inventory")) {
+                script.sh script: """
+                    echo "Ansible Playbook : config = ${config}"
+                    apk --update add sshpass
+                """, label: "Initialize SSH from Ansible"
+                script.sh script: """
+                    ansible-playbook -i ${config.inventory} ${config.playbook}
+                """, label: "Run ansible plays from mounted playbook"
+            } else {
+                script.sh script: """
+                    echo "Ansible Playbook : config = ${config}"
+                    ansible-playbook ${config.playbook}
+                """, label: "Run ansible plays from mounted playbook"
+            }
         }
     }
 

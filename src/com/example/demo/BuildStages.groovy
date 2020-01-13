@@ -13,6 +13,16 @@ class BuildStages {
 		}
 	}
 
+    static def angularCli(script, config) {
+        script.container(config.containerName) {
+            script.sh script: """
+                echo "npm install & ng build : config = ${config}"
+                npm install
+                ng build --prod --output-hashing none --single-bundle true
+            """, label: "Install Angular Frontend"
+        }
+    }
+
     static def mvn(script, config) {
         script.container(config.containerName) {
             script.sh script: """

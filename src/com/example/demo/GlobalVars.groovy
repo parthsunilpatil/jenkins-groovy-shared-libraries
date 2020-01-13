@@ -5,6 +5,16 @@ package com.example.demo
 import org.yaml.snakeyaml.Yaml
 
 class GlobalVars {
+
+    static final String PODTEMPLATE_BAREBONES_YAML = """
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      annotations:
+        podTemplateClass: "GlobalVars"
+      labels:
+        app: "dynamic-jenkins-agent"
+    """
     static final String PODTEMPLATE_YAML = """
     apiVersion: v1
     kind: Pod

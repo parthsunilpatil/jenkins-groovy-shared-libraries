@@ -19,11 +19,11 @@ class PipelineStagesFactory {
 			case "docker":
 				BuildStages.dockerBuildDeploy(script, config)
 			break
+			case "angularCli":
+				BuildStages.angularCli(script, config)
+			break
 			case "helm":
 				DeployStages.helm(script, config)
-			break
-			case "angularCli":
-				DeployStages.angularCli(script, config)
 			break
 			case "curl":
 				DeployStages.curl(script, config)
