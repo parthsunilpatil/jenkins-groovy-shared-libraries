@@ -23,4 +23,18 @@ class Utilities {
 	  )
 	}
 
+	static def emailNotificationWrapper(Map config, Closure body) {
+        try {
+            body()
+        } catch(err) {
+            echo err.getMessage()
+        } finally {
+            emailNotification(this, [
+              status: config.status,
+              stage: config.stage,
+              recipients: config.recipients
+            ])
+        }
+    }
+
 }
