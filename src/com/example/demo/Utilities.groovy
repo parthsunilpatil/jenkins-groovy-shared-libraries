@@ -23,7 +23,7 @@ class Utilities {
 	  )
 	}
 
-	static def emailNotificationWrapper(WorkflowScript script, Map config, Closure body) {
+	static def emailNotificationWrapper(script, Map config, Closure body) {
         try {
             body()
         } catch(err) {
