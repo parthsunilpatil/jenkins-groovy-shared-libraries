@@ -23,13 +23,13 @@ class Utilities {
 	  )
 	}
 
-	static def emailNotificationWrapper(Map config, Closure body) {
+	static def emailNotificationWrapper(WorkflowScript script, Map config, Closure body) {
         try {
             body()
         } catch(err) {
             echo err.getMessage()
         } finally {
-            emailNotification(this, [
+            emailNotification(script, [
               status: config.status,
               stage: config.stage,
               recipients: config.recipients
