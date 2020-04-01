@@ -28,18 +28,8 @@ class YamlPodConfigurationBuilder {
 	}
 
 	@NonCPS
-	def addContainer(String yamlStr = "") {
-		if(yamlStr != "") {
-			def container = new Yaml().load(yamlStr)
-			initMap(podTemplate, "spec")
-			initArray(podTemplate.spec, "containers")
-			podTemplate.spec.containers.add(container)
-		}
-		return this
-	}
-
-	@NonCPS
-	def addContainer(Map container = [:]) {
+	def addContainer(containerDefinition) {
+		def container = containerDefinition instanceof String ? new Yaml().load(containerDefinition) : containerDefinition
 		if(!container.isEmpty()) {
 			initMap(podTemplate, "spec")
 			initArray(podTemplate.spec, "containers")
@@ -49,39 +39,19 @@ class YamlPodConfigurationBuilder {
 	}
 
 	@NonCPS
-	def addContainers(String yamlStr = "") {
-		if(yamlStr != "") {
-			def containers = new Yaml().load(yamlStr)
-			initMap(podTemplate, "spec")
-			initArray(podTemplate.spec, "containers")
+	def addContainers(containersDefinition) {
+		def containers = containersDefinition instanceof String ? new Yaml().load(containersDefinition) : containersDefinition
+		if(!containers.isEmpty()) {
 			containers.each { container ->
-				podTemplate.spec.containers.add(container)
+				addContainer(container)
 			}
 		}
 		return this
 	}
 
 	@NonCPS
-	def addContainers(List containers = []) {
-		containers.each { container -> 
-			addContainer(container)
-		}
-		return this
-	}
-
-	@NonCPS
-	def addVolume(String yamlStr = "") {
-		if(yamlStr != "") {
-			def volume = new Yaml().load(yamlStr)
-			initMap(podTemplate, "spec")
-			initArray(podTemplate, "volumes")
-			podTemplate.spec.volumes.add(volume)
-		}
-		return this
-	}
-
-	@NonCPS
-	def addVolume(Map volume = [:]) {
+	def addVolume(volumeDefinition) {
+		def volume = volumeDefinition instanceof String ? new Yaml().load(volumeDefinition) : volumeDefinition
 		if(!volume.isEmpty()) {
 			initMap(podTemplate, "spec")
 			initArray(podTemplate, "volumes")
@@ -91,22 +61,12 @@ class YamlPodConfigurationBuilder {
 	}
 
 	@NonCPS
-	def addVolumes(String yamlStr = "") {
-		if(yamlStr != "") {
-			def volumes = new Yaml().load(yamlStr)
-			initMap(podTemplate, "spec")
+	def addVolumes(volumesDefinition) {
+		def volumes = volumesDefinition instanceof String ? new Yaml().load(volumesDefinition) : volumesDefinition
+		if(!volumes.isEmpty()) {
 			initArray(podTemplate, "volumes")
 			volumes.each { volume ->
-				podTemplate.spec.volumes.add(volume)
-			}
-		}
-		return this
-	}
-
-	@NonCPS
-	def addVolumes(List volumes = []) {
-		volumes.each { volume ->
-			addVolume(volume)
+				addVolume(volume)			}
 		}
 		return this
 	}
