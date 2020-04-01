@@ -10,6 +10,7 @@ def call(Map config) {
 			stage("Test") {
 				steps {
 					script {
+						echo config.welcomeMessage
 						echo new YamlPodConfigurationBuilder().defaultBuildStages().build()
 						echo new YamlPodConfigurationBuilder().defaultDeployStages().build()
 					}
