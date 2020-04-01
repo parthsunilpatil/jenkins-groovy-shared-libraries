@@ -54,7 +54,7 @@ class YamlPodConfigurationBuilder {
 		def volume = volumeDefinition instanceof String ? new Yaml().load(volumeDefinition) : volumeDefinition
 		if(!volume.isEmpty()) {
 			initMap(podTemplate, "spec")
-			initArray(podTemplate, "volumes")
+			initArray(podTemplate.spec, "volumes")
 			podTemplate.spec.volumes.add(volume)
 		}
 		return this
@@ -66,7 +66,8 @@ class YamlPodConfigurationBuilder {
 		if(!volumes.isEmpty()) {
 			initArray(podTemplate, "volumes")
 			volumes.each { volume ->
-				addVolume(volume)			}
+				addVolume(volume)			
+			}
 		}
 		return this
 	}
