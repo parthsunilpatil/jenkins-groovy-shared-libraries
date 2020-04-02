@@ -107,7 +107,7 @@ class YamlPodConfigurationBuilder {
 	}
 
 	@NonCPS
-	def defaultBuildStages() {
+	def forDefaultBuildStages() {
 		return this
 				.addContainers([
 					PodTemplateYamls.PODTEMPLATE_CONTAINER_DOCKER,
@@ -121,16 +121,30 @@ class YamlPodConfigurationBuilder {
 	}
 
 	@NonCPS
-	def defaultDeployStages() {
+	def forDefaultDeployStages() {
 		return this
-				.addContainers([
-					PodTemplateYamls.PODTEMPLATE_CONTAINER_DOCKER,
-					PodTemplateYamls.PODTEMPLATE_CONTAINER_HELM
-				])
-				.addVolumes([
-					PodTemplateYamls.PODTEMPLATE_VOLUME_DOCKERSOCK,
-					PodTemplateYamls.PODTEMPLATE_VOLUME_KUBECONFIG
-				])
+		.addContainers([
+			PodTemplateYamls.PODTEMPLATE_CONTAINER_HELM
+		])
+		.addVolumes([
+			PodTemplateYamls.PODTEMPLATE_VOLUME_KUBECONFIG
+		])
+	}
+
+	@NonCPS
+	def forDefaultBuildDeployStages() {
+		return this
+		.addContainers([
+			PodTemplateYamls.PODTEMPLATE_CONTAINER_DOCKER,
+			PodTemplateYamls.PODTEMPLATE_CONTAINER_GIT,
+			PodTemplateYamls.PODTEMPLATE_CONTAINER_MAVEN,
+			PodTemplateYamls.PODTEMPLATE_CONTAINER_HELM
+		])
+		.addVolumes([
+			PodTemplateYamls.PODTEMPLATE_VOLUME_DOCKERSOCK,
+			PodTemplateYamls.PODTEMPLATE_VOLUME_MVNM2,
+			PodTemplateYamls.PODTEMPLATE_VOLUME_KUBECONFIG
+		])
 	}
 
 	@NonCPS
