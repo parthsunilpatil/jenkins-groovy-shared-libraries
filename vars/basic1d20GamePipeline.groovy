@@ -39,10 +39,12 @@ def call(Map config) {
 								recipients: "parth.patil@imaginea.com"
 							], {
 								stage("Checkout") {
-									sh script: """
-										git clone -b ${gitBranch} ${gitRepository} .
-										pwd; ls -ltr
-									""", label: "Checkout Source Code"
+									container("git") {
+										sh script: """
+											git clone -b ${gitBranch} ${gitRepository} .
+											pwd; ls -ltr
+										""", label: "Checkout Source Code"
+									}
 								}
 							})
 
@@ -52,12 +54,14 @@ def call(Map config) {
 								recipients: "parth.patil@imaginea.com"
 							], {
 								stage("Maven Build") {
-									sh script: """
-										mvn clean install
-									""", label: "Maven Build"
+									container("maven") {
+										sh script: """
+											mvn clean install
+										""", label: "Maven Build"
 
-									dockerTag = readMavenPom().properties["docker-tag-version"]
-									echo dockerTag
+										dockerTag = readMavenPom().properties["docker-tag-version"]
+										echo dockerTag
+									}
 								}
 							})
 
@@ -67,9 +71,11 @@ def call(Map config) {
 								recipients: "parth.patil@imaginea.com"
 							], {
 								stage("Docker Build & Deploy") {
-									sh script: """
-										docker build --no-cache -t ${dockerRegistry}/${dockerRepository}:${dockerTag} .
-									""", label: "Docker Build & Deploy"
+									container("docker") {
+										sh script: """
+											docker build --no-cache -t ${dockerRegistry}/${dockerRepository}:${dockerTag} .
+										""", label: "Docker Build & Deploy"
+									}
 								}
 							})
 

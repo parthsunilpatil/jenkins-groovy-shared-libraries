@@ -26,7 +26,7 @@ class PipelineWrappers {
 	    mimeType: 'text/html',
 	    to: config.recipients,
 	    subject: subject,
-	    closure: details,
+	    body: details,
 	    recipientProviders: [[$class: 'DevelopersRecipientProvider']]
 	  )
 	}
@@ -45,7 +45,7 @@ class PipelineWrappers {
 		  mimeType: 'text/html',
 		  to: config.recipients,
 		  subject: subject,
-		  closure: details,
+		  body: details,
 		  recipientProviders: [[$class: 'DevelopersRecipientProvider']]
 	  )
 	}
