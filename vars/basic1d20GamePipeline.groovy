@@ -16,7 +16,7 @@ def call(Map config) {
 
 	def helmChartName = "${config.HELM_CHART_NAME}"
 	def helmChartsRepository = "${config.HELM_CHARTS_REPOSITORY}"
-	def helmChartsRepositoryUrl = "${config.HELM_CHART_REPOSITORY_URL}"
+	def helmChartsRepositoryUrl = "${config.HELM_CHARTS_REPOSITORY_URL}"
 
 	pipeline {
 
