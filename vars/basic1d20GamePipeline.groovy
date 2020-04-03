@@ -97,13 +97,12 @@ def call(Map config) {
 								recipients: "parth.patil@imaginea.com"
 							],
 							environments: deploymentEnvironments
-						], {
+						], { closureParams ->
 
 							PipelineWrappers.dynamicAgentPodTemplate(this, [
 								label: "dynamic-jenkins-deploy-agent",
-								yaml: new YamlPodConfigurationBuilder().forDefaultDeployStages().addContainer(PodTemplateYamls.PODTEMPLATE_CONTAINER_GIT).build(),
-								closureParams: [environment: deploymentEnvironment]
-							], { closureParams ->
+								yaml: new YamlPodConfigurationBuilder().forDefaultDeployStages().addContainer(PodTemplateYamls.PODTEMPLATE_CONTAINER_GIT).build()
+							], {
 
 								PipelineWrappers.email(this, [
 									status: currentBuild.result,
