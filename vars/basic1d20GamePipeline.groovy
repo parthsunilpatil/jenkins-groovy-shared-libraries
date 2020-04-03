@@ -132,8 +132,8 @@ def call(Map config) {
 											sh script: """
 												helm init --client-only
 												helm repo add ${helmChartsRepository} ${helmChartsRepositoryUrl}
-												echo "helm upgrade --install -f values.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}"
-	    										helm upgrade --install -f values.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}
+												echo "helm upgrade --install ${projectName}-kube-${closureParams.environment} -f values.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}"
+	    										helm upgrade --install ${projectName}-kube-${closureParams.environment} -f values.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}
 
 											""", label: "Helm Deployment"
 										}
