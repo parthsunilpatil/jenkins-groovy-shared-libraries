@@ -114,7 +114,7 @@ def call(Map config) {
 									stage("Checkout Deployment Properties - ${closureParams.environment}") {
 										container("helm") {	
 											sh script: """
-												wget ${helmValuesUrl}
+												wget ${helmValuesUrl}/values-${closureParams.environment}.yaml
 											""", label: "Checkout Deployment Properties"
 										}
 									}
@@ -132,8 +132,8 @@ def call(Map config) {
 											sh script: """
 												helm init --client-only
 												helm repo add ${helmChartsRepository} ${helmChartsRepositoryUrl}
-												echo "helm upgrade --install ${projectName}-kube-${closureParams.environment} -f values.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}"
-	    										helm upgrade --install ${projectName}-kube-${closureParams.environment} -f values.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}
+												echo "helm upgrade --install ${projectName}-kube-${closureParams.environment} -f values-${closureParams.environment}.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}"
+	    										helm upgrade --install ${projectName}-kube-${closureParams.environment} -f values-${closureParams.environment}.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}
 
 											""", label: "Helm Deployment"
 										}
