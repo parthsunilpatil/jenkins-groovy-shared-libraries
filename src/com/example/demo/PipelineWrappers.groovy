@@ -87,20 +87,6 @@ class PipelineWrappers {
 			]);
 		}
 	}
-	
-	static def rollingDeployments(script, config, Closure closure) {
-		config.environments.each { rollingDeployEnv -> 
-
-			promotion(script, [
-				deployment: rollingDeployEnv,
-				submitters: config.promotion.submitters,
-				recipients: config.promotion.recipients
-			])
-
-			callClosure([closureParams: [environment: rollingDeployEnv]], closure)
-			
-		}
-	}
 
 	static def dynamicAgentPodTemplate(script, config, Closure closure) {
 		script.podTemplate([

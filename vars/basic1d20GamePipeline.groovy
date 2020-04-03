@@ -91,26 +91,25 @@ def call(Map config) {
 				steps {
 					script {
 
-						PipelineWrappers.rollingDeployments(this, [
-							promotion: [
+						deploymentEnvironments.each { deploymentEnvironment ->
+
+							PipelineWrappers.promotion(this, [
+								deployment: deploymentEnvironment,
 								submitters: "admin",
 								recipients: "parth.patil@imaginea.com"
-							],
-							environments: ["dev", "model", "prod"]
-						], { closureParams ->
+							])
 
 							PipelineWrappers.dynamicAgentPodTemplate(this, [
 								label: "dynamic-jenkins-deploy-agent",
 								yaml: new YamlPodConfigurationBuilder().forDefaultDeployStages().addContainer(PodTemplateYamls.PODTEMPLATE_CONTAINER_GIT).build(),
-								closureParams: closureParams
+								closureParams: [environment: deploymentEnvironment]
 							], { closureParams ->
 
 								PipelineWrappers.email(this, [
 									status: currentBuild.result,
 									name: "Deploy ${closureParams.environment}",
-									recipients: "parth.patil@imaginea.com",
-									closureParams: closureParams
-								], { closureParams ->
+									recipients: "parth.patil@imaginea.com"
+								], {
 
 									stage("Deploy ${closureParams.environment}") {
 										echo "${closureParams.environment}"
@@ -120,7 +119,7 @@ def call(Map config) {
 
 							})
 
-						})
+						}
 
 					}
 				}
