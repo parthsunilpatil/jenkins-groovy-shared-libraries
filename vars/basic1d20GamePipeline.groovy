@@ -128,13 +128,15 @@ def call(Map config) {
 								], {
 
 									stage("Deploy ${closureParams.environment}") {
-										sh script: """
-											helm init --client-only
-											helm repo add ${helmChartsRepository} ${helmChartsRepositoryUrl}
-											echo "helm upgrade --install -f values.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}"
-    										helm upgrade --install -f values.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}
+										container("helm") {
+											sh script: """
+												helm init --client-only
+												helm repo add ${helmChartsRepository} ${helmChartsRepositoryUrl}
+												echo "helm upgrade --install -f values.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}"
+	    										helm upgrade --install -f values.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}
 
-										""", label: "Helm Deployment"
+											""", label: "Helm Deployment"
+										}
 									}
 
 								})
