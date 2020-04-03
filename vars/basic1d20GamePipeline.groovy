@@ -18,6 +18,8 @@ def call(Map config) {
 	def helmChartsRepository = "${config.HELM_CHARTS_REPOSITORY}"
 	def helmChartsRepositoryUrl = "${config.HELM_CHARTS_REPOSITORY_URL}"
 
+	def deploymentEnvironments = "${config.DEPLOYMENT_ENVIRONMENTS}"
+
 	pipeline {
 
 		agent none
@@ -73,10 +75,49 @@ def call(Map config) {
 								stage("Docker Build & Deploy") {
 									container("docker") {
 										sh script: """
-											docker build --no-cache -t ${dockerRegistry}/${dockerRepository}:${dockerTag} .
+											docker build -t ${dockerRegistry}/${dockerRepository}:${dockerTag} .
 										""", label: "Docker Build & Deploy"
 									}
 								}
+							})
+
+						})
+
+					}
+				}
+			}
+
+			stage("Deploy Stages") {
+				steps {
+					script {
+
+						PipelineWrappers.rollingDeployments(this, [
+							promotion: [
+								submitters: "admin",
+								recipients: "parth.patil@imaginea.com"
+							],
+							environments: ["dev", "model", "prod"]
+						], { closureParams ->
+
+							PipelineWrappers.dynamicAgentPodTemplate(this, [
+								label: "dynamic-jenkins-deploy-agent",
+								yaml: new YamlPodConfigurationBuilder().forDefaultDeployStages().addContainer(PodTemplateYamls.PODTEMPLATE_CONTAINER_GIT).build(),
+								closureParams: closureParams
+							], { closureParams ->
+
+								PipelineWrappers.email(this, [
+									status: currentBuild.result,
+									name: "Deploy ${closureParams.environment}",
+									recipients: "parth.patil@imaginea.com",
+									closureParams: closureParams
+								], { closureParams ->
+
+									stage("Deploy ${closureParams.environment}") {
+										echo "${closureParams.environment}"
+									}
+
+								})
+
 							})
 
 						})

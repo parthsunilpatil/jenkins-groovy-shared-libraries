@@ -97,7 +97,7 @@ class PipelineWrappers {
 				recipients: config.promotion.recipients
 			])
 
-			callClosure(config, closure)
+			callClosure([closureParams: [environment: rollingDeployEnv]], closure)
 			
 		}
 	}
