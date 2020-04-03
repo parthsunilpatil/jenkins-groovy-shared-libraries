@@ -91,13 +91,13 @@ def call(Map config) {
 				steps {
 					script {
 
-						deploymentEnvironments.each { deploymentEnvironment ->
-
-							PipelineWrappers.promotion(this, [
-								deployment: deploymentEnvironment,
+						PipelineWrappers.rollingDeployments(this, [
+							promotion: [
 								submitters: "admin",
 								recipients: "parth.patil@imaginea.com"
-							])
+							],
+							environments: deploymentEnvironments
+						], {
 
 							PipelineWrappers.dynamicAgentPodTemplate(this, [
 								label: "dynamic-jenkins-deploy-agent",
@@ -119,7 +119,7 @@ def call(Map config) {
 
 							})
 
-						}
+						})
 
 					}
 				}
