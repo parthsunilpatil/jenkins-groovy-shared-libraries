@@ -102,7 +102,7 @@ def call(Map config) {
 
 							PipelineWrappers.dynamicAgentPodTemplate(this, [
 								label: "dynamic-jenkins-deploy-agent",
-								yaml: new YamlPodConfigurationBuilder().addNodeSelector("kubernetes.io/hostname: docker-desktop").withDefaultDeployStages().withDocker().build()
+								yaml: new YamlPodConfigurationBuilder().addNodeSelector("kubernetes.io/hostname: docker-desktop").setSecretNameForVolume("kubeconfig", "kubeconfig-${closureParams.environment}").withDefaultDeployStages().withDocker().build()
 							], {
 
 								PipelineWrappers.email(this, [
