@@ -68,8 +68,10 @@ class PipelineWrappers {
 
 			}
 		} catch(err) {
-			script.echo err.getMessage();
-			throw err
+			if(err != null) {
+				script.echo err.getMessage();
+				throw err	
+			}
 		}
 	}
 
@@ -77,8 +79,10 @@ class PipelineWrappers {
 		try {
 			callClosure(config, closure)
 		} catch(err) {
-			script.echo err.getMessage();
-			throw err
+			if(err != null) {
+				script.echo err.getMessage();
+				throw err	
+			}
 		} finally {
 			emailNotification(script, [
 				status: config.status,

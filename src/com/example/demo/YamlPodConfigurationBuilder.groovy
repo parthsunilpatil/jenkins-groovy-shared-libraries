@@ -107,7 +107,20 @@ class YamlPodConfigurationBuilder {
 	}
 
 	@NonCPS
-	def forDefaultBuildStages() {
+	def addNodeSelector(String yamlStr = "") {
+		if(yamlStr != "") {
+			def nodeSelector = new Yaml().load(yamlStr)
+			nodeSelector.each {
+				initMap(podTemplate, "spec")
+				initMap(podTemplate.spec, "nodeSelector")
+				podTemplate.spec.nodeSelector.put(it.key, it.value)
+			}
+		}
+		return this
+	}
+
+	@NonCPS
+	def withDefaultBuildStages() {
 		return this
 				.addContainers([
 					PodTemplateYamls.PODTEMPLATE_CONTAINER_DOCKER,
@@ -121,18 +134,14 @@ class YamlPodConfigurationBuilder {
 	}
 
 	@NonCPS
-	def forDefaultDeployStages() {
+	def withDefaultDeployStages() {
 		return this
-		.addContainers([
-			PodTemplateYamls.PODTEMPLATE_CONTAINER_HELM
-		])
-		.addVolumes([
-			PodTemplateYamls.PODTEMPLATE_VOLUME_KUBECONFIG
-		])
+		.addContainer(PodTemplateYamls.PODTEMPLATE_CONTAINER_HELM)
+		.addVolume(PodTemplateYamls.PODTEMPLATE_VOLUME_KUBECONFIG)
 	}
 
 	@NonCPS
-	def forDefaultBuildDeployStages() {
+	def withDefaultBuildDeployStages() {
 		return this
 		.addContainers([
 			PodTemplateYamls.PODTEMPLATE_CONTAINER_DOCKER,
@@ -145,6 +154,33 @@ class YamlPodConfigurationBuilder {
 			PodTemplateYamls.PODTEMPLATE_VOLUME_MVNM2,
 			PodTemplateYamls.PODTEMPLATE_VOLUME_KUBECONFIG
 		])
+	}
+
+	@NonCPS
+	def withDocker() {
+		return this
+		.addContainer(PodTemplateYamls.PODTEMPLATE_CONTAINER_DOCKER)
+		.addVolume(PodTemplateYamls.PODTEMPLATE_VOLUME_DOCKERSOCK)
+	}
+
+	@NonCPS
+	def withGit() {
+		return this
+		.addContainer(PodTemplateYamls.PODTEMPLATE_CONTAINER_GIT)
+	}
+
+	@NonCPS
+	def withMaven() {
+		return this
+		.addContainer(PodTemplateYamls.PODTEMPLATE_CONTAINER_MAVEN)
+		.addVolume(PodTemplateYamls.PODTEMPLATE_VOLUME_MVNM2)
+	}
+
+	@NonCPS
+	def withHelm() {
+		return this
+		.addContainer(PodTemplateYamls.PODTEMPLATE_CONTAINER_HELM)
+		.addVolume(PodTemplateYamls.PODTEMPLATE_VOLUME_KUBECONFIG)
 	}
 
 	@NonCPS

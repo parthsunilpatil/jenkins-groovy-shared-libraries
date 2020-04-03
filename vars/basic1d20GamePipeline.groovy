@@ -17,6 +17,7 @@ def call(Map config) {
 	def helmChartName = "${config.HELM_CHART_NAME}"
 	def helmChartsRepository = "${config.HELM_CHARTS_REPOSITORY}"
 	def helmChartsRepositoryUrl = "${config.HELM_CHARTS_REPOSITORY_URL}"
+	def helmValuesUrl = "${config.HELM_VALUES_URL}"
 
 	def deploymentEnvironments = config.DEPLOYMENT_ENVIRONMENTS
 
@@ -32,7 +33,7 @@ def call(Map config) {
 
 						PipelineWrappers.dynamicAgentPodTemplate(this, [
 							label: "dynamic-jenkins-build-agent",
-							yaml: new YamlPodConfigurationBuilder().forDefaultBuildStages().build()
+							yaml: new YamlPodConfigurationBuilder().withDefaultBuildStages().build()
 						], {
 
 							PipelineWrappers.email(this, [
@@ -101,8 +102,24 @@ def call(Map config) {
 
 							PipelineWrappers.dynamicAgentPodTemplate(this, [
 								label: "dynamic-jenkins-deploy-agent",
-								yaml: new YamlPodConfigurationBuilder().forDefaultDeployStages().addContainer(PodTemplateYamls.PODTEMPLATE_CONTAINER_GIT).build()
+								yaml: new YamlPodConfigurationBuilder().withDefaultDeployStages().withDocker().build()
 							], {
+
+								PipelineWrappers.email(this, [
+									status: currentBuild.result,
+									name: "Checkout Deployment Properties - ${closureParams.environment}",
+									recipients: "parth.patil@imaginea.com"
+								], {
+									
+									stage("Checkout Deployment Properties - ${closureParams.environment}") {
+										container("helm") {	
+											sh script: """
+												wget ${helmValuesUrl}
+											""", label: "Checkout Deployment Properties"
+										}
+									}
+
+								})
 
 								PipelineWrappers.email(this, [
 									status: currentBuild.result,
@@ -111,7 +128,13 @@ def call(Map config) {
 								], {
 
 									stage("Deploy ${closureParams.environment}") {
-										echo "${closureParams.environment}"
+										sh script: """
+											helm init --client-only
+											helm repo add ${helmChartsRepository} ${helmChartsRepositoryUrl}
+											echo "helm upgrade --install -f values.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}"
+    										helm upgrade --install -f values.yaml --set image.repository=${dockerRegistry}/${dockerRepository} --set image.tag=${dockerTag} --namespace kube-${closureParams.environment} ${helmChartsRepository}/${helmChartName}
+
+										""", label: "Helm Deployment"
 									}
 
 								})
