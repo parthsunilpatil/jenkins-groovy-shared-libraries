@@ -18,7 +18,7 @@ def call(Map config) {
 	def helmChartsRepository = "${config.HELM_CHARTS_REPOSITORY}"
 	def helmChartsRepositoryUrl = "${config.HELM_CHARTS_REPOSITORY_URL}"
 
-	def deploymentEnvironments = "${config.DEPLOYMENT_ENVIRONMENTS}"
+	def deploymentEnvironments = config.DEPLOYMENT_ENVIRONMENTS
 
 	pipeline {
 
