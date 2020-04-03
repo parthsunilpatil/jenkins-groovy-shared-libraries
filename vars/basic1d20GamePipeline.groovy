@@ -139,6 +139,21 @@ def call(Map config) {
 
 								})
 
+								PipelineWrappers.email(this, [
+									status: currentBuild.result,
+									name: "Docker Cleanup",
+									recipients: "parth.patil@imaginea.com"
+								], {
+									container("docker") {
+										sh script: """
+											echo "Cleaning up dangling images"
+								            if ! docker rmi --force `docker images -f "dangling=true" -q`; then
+								            	echo "Clean Up of dangling not in use docker images completed"
+								            fi
+										""", label: "Docker Cleanup"
+									}		
+								})
+
 							})
 
 						})
