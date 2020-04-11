@@ -51,14 +51,14 @@ def call(Map config) {
 				}
 			}
 
-			post {
-				always {
-					node("slave-1") {
-						cleanWs()
-					}
+		}
+
+		post {
+			always {
+				node("slave-1") {
+					cleanWs()
 				}
 			}
-
 		}
 	}
 }
