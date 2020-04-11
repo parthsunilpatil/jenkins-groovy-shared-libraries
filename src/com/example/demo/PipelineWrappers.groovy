@@ -119,15 +119,4 @@ class PipelineWrappers {
 		}
 	}
 
-	static def stages(script, config, Closure closure) {
-		script.stages {
-			script.agent {
-				label "${config.agent.label}"
-			}
-			config.iterations.each { itr ->
-				callClosure([closureParams: itr], closure)
-			}
-		}
-	}
-
 }

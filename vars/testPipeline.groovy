@@ -7,19 +7,14 @@ def call(Map config) {
 	pipeline {
 		agent none
 		
-		PipelineWrappers.stages(this, [
-			agent: [label: "slave-1"],
-			iterations: [
-				[iteration: "1", value: "one"],
-				[iteration: "2", value: "two"],
-				[iteration: "3", value: "three"]
-			]
-		], { closureParams ->
-			stage("${closureParams.iteration}") {
-				steps {
-					echo "${closureParams.value}"
-				}
+		stages {
+			agent {
+				label "slave-1"
 			}
-		})
+
+			stage("1") {
+				echo "1"
+			}
+		}
 	}
 }
