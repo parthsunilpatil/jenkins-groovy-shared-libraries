@@ -4,64 +4,27 @@ import com.example.demo.PipelineWrappers
 import com.example.demo.YamlPodConfigurationBuilder
 
 def call(Map config) {
-	pipeline {
-		agent none
-		
-		stages {
-			
-			stage("1") {
+	stage("1") {
+		node("slave-1") {
+			stage("1.1") {
+				echo "1.1"
+			}
+			stage("1.2") {
+				echo "1.2"
+			}
+		}
+	}
 
-				agent {
-					label "slave-1"
+	config.iterations.each {
+		stage("${it}") {
+			node("slave-1") {
+				stage("${it}.1") {
+					echo "${it}.1"
 				}
-
-				stages {
-					stage("1.1") {
-			            steps {
-			                echo "1.1"
-			            }
-			        }
-
-			        stage("1.2") {
-			            steps {
-			                echo "1.2"
-			            }
-			        }
+				stage("${it}.2") {
+					echo "${it}.2"
 				}
 			}
-
-			config.iterations.each { iteration ->
-
-				stage("${iteration}") {
-					agent {
-						label "slave-1"
-					}
-
-					stages {
-						stage("${iteration}.1") {
-				            steps {
-				                echo "${iteration}.1"
-				            }
-				        }
-
-				        stage("${iteration}.2") {
-				            steps {
-				                echo "${iteration}.2"
-				            }
-				        }
-					}
-				}
-
-			}
-
-			post {
-				always {
-					node("slave-1") {
-						cleanWs()
-					}
-				}
-			}
-
 		}
 	}
 }
