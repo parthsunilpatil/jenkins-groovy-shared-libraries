@@ -8,12 +8,24 @@ def call(Map config) {
 		agent none
 		
 		stages {
-			agent {
-				label "slave-1"
-			}
-
+			
 			stage("1") {
-				echo "1"
+
+				agent {
+					label "slave-1"
+				}
+
+				stages {
+					stage("1.1") {
+			            steps {
+			                echo "Hi"
+			                sh """
+			                    docker images
+			                    docker ps
+			                """
+			            }
+			        }
+				}
 			}
 		}
 	}
