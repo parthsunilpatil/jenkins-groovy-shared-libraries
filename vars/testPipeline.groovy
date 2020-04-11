@@ -56,7 +56,7 @@ def call(Map config) {
 		post {
 			always {
 				node("slave-1") {
-					cleanWs()
+					deleteDir()
 				}
 			}
 		}
