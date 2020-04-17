@@ -15,7 +15,9 @@ def call(Map config) {
 		stages {
 
 			stage("Hello") {
-				echo "Hello"
+				steps {
+					echo "Hello, ${config.name}!"
+				}
 			}
 
 			stage("Build Stages") {
@@ -33,7 +35,9 @@ def call(Map config) {
 			}
 
 			stage("Bye") {
-				echo "Bye"
+				steps {
+					echo "Bye, ${config.name}!"
+				}
 			}
 
 		}
