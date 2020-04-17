@@ -5,7 +5,7 @@ import com.example.demo.microservices.MicroservicesPipelineStages
 
 def call(Map config) {
 
-	def microservicesPipeline = new MicroservicesPipelineStages(script: this)
+	def microservicesPipeline = new MicroservicesPipelineStages(this)
 	def labelCode = "worker-" + UUID.randomUUID().toString()
 
 	pipeline {
