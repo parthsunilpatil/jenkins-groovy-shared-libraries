@@ -11,6 +11,12 @@ abstract class PipelineStages {
 		this.script = script
 	}
 
+	abstract def checkout()
+
+	abstract def build()
+
+	abstract def distribute(config)
+
 	def dynamicAgentBuildStages(config) {
 		script.podTemplate([
 			label: config.label,
@@ -31,7 +37,7 @@ abstract class PipelineStages {
 
 				script.stage("distribute") {
 					script.container(config.distribute.container) {
-						distribute(config.distribute.dockerTag)
+						distribute(config.distribute)
 					}
 				}
 			}

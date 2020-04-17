@@ -1,11 +1,11 @@
 #!/usr/bin/env groovy
 import com.example.demo.PodTemplateYamls
 import com.example.demo.YamlPodConfigurationBuilder
-import com.example.demo.microservices.MicroservicesPipelineStages
+import com.example.demo.microservices.CIMicroservicesPipelineStages
 
 def call(Map config) {
 
-	def microservicesPipeline = new MicroservicesPipelineStages(this)
+	def microservicesPipeline = new CIMicroservicesPipelineStages(this)
 	def labelCode = "worker-" + UUID.randomUUID().toString()
 
 	pipeline {
