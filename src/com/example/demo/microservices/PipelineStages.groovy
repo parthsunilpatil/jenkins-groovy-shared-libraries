@@ -48,7 +48,7 @@ class PipelineStages {
 					}
 				}
 
-				stage("distribute") {
+				script.stage("distribute") {
 					script.container(config.distribute.container) {
 						distribute(config.distribute.config)
 					}
