@@ -1,11 +1,15 @@
 #!/usr/bin/env groovy
 package com.example.demo.microservices
 
-class MicroservicesPipelineStages implements PipelineStages {
+class MicroservicesPipelineStages extends PipelineStages {
 
-	/*def distribute(config) {
+	MicroservicesPipelineStages(script) {
+		super(script)
+	}
+
+	def distribute(config) {
 		def dockerTag = script.readMavenPom().properties["docker-tag-version"]
-		PipelineStages.super.distribute(config: [dockerTag: dockerTag])
-	}*/
+		super.distribute(config: [dockerTag: dockerTag])
+	}
 
 }

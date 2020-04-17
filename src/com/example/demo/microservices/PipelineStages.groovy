@@ -3,9 +3,13 @@ package com.example.demo.microservices
 
 import com.example.demo.PipelineWrappers
 
-trait PipelineStages {
+class PipelineStages {
 
 	def script
+
+	PipelineStages(script) {
+		this.script = script
+	}
 
 	def checkout() {
 		script.sh script: """
