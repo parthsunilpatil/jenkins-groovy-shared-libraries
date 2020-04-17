@@ -2,10 +2,12 @@
 import com.example.demo.PodTemplateYamls
 import com.example.demo.YamlPodConfigurationBuilder
 import com.example.demo.microservices.CIMicroservicesPipelineStages
+import com.example.demo.microservices.AIMicroservicesPipelineStages
 
 def call(Map config) {
 
-	def microservicesPipeline = new CIMicroservicesPipelineStages(this)
+	//def microservicesPipeline = new CIMicroservicesPipelineStages(this)
+	def microservicesPipeline = new AIMicroservicesPipelineStages(this)
 	def labelCode = "worker-" + UUID.randomUUID().toString()
 
 	pipeline {
