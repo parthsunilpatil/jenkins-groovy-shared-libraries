@@ -21,10 +21,8 @@ class MicroservicesPipelineStages extends PipelineStages {
 	}
 
 	def distribute(config) {
-		def dockerTag = script.readMavenPom().properties["docker-tag-version"]
-		
 		script.sh script: """
-			docker build -t ${script.params.DOCKER_REGISTRY}/${script.params.DOCKER_REPOSITORY}:${dockerTag} .
+			docker build -t ${script.params.DOCKER_REGISTRY}/${script.params.DOCKER_REPOSITORY}:${config.dockerTag} .
 		""", label: "Docker Build & Deploy"
 	}
 
