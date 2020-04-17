@@ -1,7 +1,9 @@
 #!/usr/bin/env groovy
 package com.example.demo.microservices
 
-class CIMicroservicesPipelineStages extends MicroServicesPipelineStages {
+import com.example.demo.microservices.MicroservicesPipelineStages
+
+class CIMicroservicesPipelineStages extends MicroservicesPipelineStages {
 
 	CIMicroservicesPipelineStages(script) {
 		super(script)
