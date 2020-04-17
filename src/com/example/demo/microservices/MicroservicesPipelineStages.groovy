@@ -5,7 +5,7 @@ class MicroservicesPipelineStages implements PipelineStages {
 
 	def distribute(config) {
 		def dockerTag = script.readMavenPom().properties["docker-tag-version"]
-		PipelineStages.distribute(config: [dockerTag: dockerTag])
+		PipelineStages.super.distribute(config: [dockerTag: dockerTag])
 	}
 
 }
