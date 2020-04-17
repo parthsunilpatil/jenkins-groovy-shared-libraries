@@ -1,8 +1,6 @@
 #!/usr/bin/env groovy
 import com.example.demo.PodTemplateYamls
 import com.example.demo.YamlPodConfigurationBuilder
-import com.example.demo.microservices.CIMicroservicesPipelineStages
-import com.example.demo.microservices.AIMicroservicesPipelineStages
 import com.example.demo.microservices.factory.MicroservicesPipelineStagesFactory
 
 def call(Map config) {

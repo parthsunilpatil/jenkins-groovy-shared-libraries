@@ -1,8 +1,8 @@
 #!/usr/bin/env groovy
 package com.example.demo.microservices.factory
 
-import com.example.demo.microservices.AIMicroservicesPipeline
-import com.example.demo.microservices.CIMicroservicesPipeline
+import com.example.demo.microservices.CIMicroservicesPipelineStages
+import com.example.demo.microservices.AIMicroservicesPipelineStages
 
 class MicroservicesPipelineStagesFactory {
 
@@ -10,13 +10,13 @@ class MicroservicesPipelineStagesFactory {
 
 		switch(type) {
 			case "ai":
-				return new CIMicroservicesPipeline(script)
+				return new CIMicroservicesPipelineStages(script)
 			break
 			case "ci":
-				return new AIMicroservicesPipeline(script)
+				return new AIMicroservicesPipelineStages(script)
 			break
 			default:
-
+				throw new ClassNotFoundException("No class associated with type: ${type}")
 			break
 		}
 
